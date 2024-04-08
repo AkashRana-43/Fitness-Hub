@@ -9,16 +9,25 @@ import {
     Menu,
     Close,
 } from "@mui/icons-material";
-// import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { MenuItems } from './data/NavItems'
 import FlexBetween from './FlexBetween';
 
-const Navbar = () => {
+const Navbar = ({toggleFormState}) => {
 
+
+    const handleLoginClick = () => {
+        navigate('/login'); 
+        toggleFormState()
+    };
+    
+    const handleJoinUsClick = () => {
+        navigate('/joinus');
+        toggleFormState()
+    };
+    
     const [isMobileMenuToggled, setIsMobileMenuToggled] = useState(false);
     const isNonMobileScreens = useMediaQuery("(min-width: 800px)");
-    // const dispatch = useDispatch();
     const navigate = useNavigate();
 
     return (
@@ -69,29 +78,31 @@ const Navbar = () => {
                     })
                     }
                     <Typography
-                        padding= '.3rem 1.5rem'
+                        padding='.3rem 1.5rem'
                         backgroundColor="transparent"
                         color='#e54b26'
                         border='2px solid #e54b26'
                         outline='none'
-                        borderRadius= '3rem'
+                        borderRadius='3rem'
+                        onClick={handleLoginClick}
                         sx={{
                             "&:hover": {
                                 cursor: "pointer",
-                                backgroundColor:"#e54b26",
-                                color:'#fff'
+                                backgroundColor: "#e54b26",
+                                color: '#fff'
                             },
                         }}
                     >
                         Login
                     </Typography>
                     <Typography
-                        padding= '.4rem 1.5rem'
+                        padding='.4rem 1.5rem'
                         backgroundColor="#e54b26"
                         color='white'
                         border='none'
                         outline='none'
-                        borderRadius= '3rem'
+                        borderRadius='3rem'
+                        onClick={handleJoinUsClick}
                         sx={{
                             "&:hover": {
                                 cursor: "pointer",
@@ -118,11 +129,11 @@ const Navbar = () => {
                     height="auto"
                     zIndex="10"
                     width="100%"
-                    backgroundColor = "rgba(255, 255, 255, 0.1)"
-                    backdropFilter = "blur(10px)"
-                    padding= '80px 0 30px 0'
+                    backgroundColor="rgba(255, 255, 255, 0.1)"
+                    backdropFilter="blur(10px)"
+                    padding='80px 0 30px 0'
                     margin='0'
-                    borderRadius= '13px'
+                    borderRadius='13px'
                 >
                     <Box display="flex" justifyContent="flex-end" p="1rem">
                         <IconButton
@@ -161,37 +172,39 @@ const Navbar = () => {
                         })
                         }
                         <Typography
-                        padding= '.3rem 1.5rem'
-                        backgroundColor="transparent"
-                        color='#e54b26'
-                        border='2px solid #e54b26'
-                        outline='none'
-                        borderRadius= '3rem'
-                        sx={{
-                            "&:hover": {
-                                cursor: "pointer",
-                                backgroundColor:"#e54b26",
-                                color:'#fff'
-                            },
-                        }}
-                    >
-                        Login
-                    </Typography>
-                    <Typography
-                        padding= '.4rem 1.5rem'
-                        backgroundColor="#e54b26"
-                        color='white'
-                        border='none'
-                        outline='none'
-                        borderRadius= '3rem'
-                        sx={{
-                            "&:hover": {
-                                cursor: "pointer",
-                            },
-                        }}
-                    >
-                        Join Us
-                    </Typography>
+                            padding='.3rem 1.5rem'
+                            backgroundColor="transparent"
+                            color='#e54b26'
+                            border='2px solid #e54b26'
+                            outline='none'
+                            borderRadius='3rem'
+                            onClick={() => navigate("/login")}
+                            sx={{
+                                "&:hover": {
+                                    cursor: "pointer",
+                                    backgroundColor: "#e54b26",
+                                    color: '#fff'
+                                },
+                            }}
+                        >
+                            Login
+                        </Typography>
+                        <Typography
+                            padding='.4rem 1.5rem'
+                            backgroundColor="#e54b26"
+                            color='white'
+                            border='none'
+                            outline='none'
+                            borderRadius='3rem'
+                            onClick={() => navigate("/joinus")}
+                            sx={{
+                                "&:hover": {
+                                    cursor: "pointer",
+                                },
+                            }}
+                        >
+                            Join Us
+                        </Typography>
                     </FlexBetween>
                 </Box>
             )}
