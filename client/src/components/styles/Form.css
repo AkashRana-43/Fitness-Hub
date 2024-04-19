@@ -2,7 +2,7 @@
     width: 220px;
     margin: 35px auto;
     position: relative;
-    background-color: rrgba(255, 255, 255, 0.209);
+    background-color: rgba(255, 255, 255, 0.209);
     box-shadow: 0 0 25px 5px #0000003b;
     border-radius: 30px;
 }
@@ -14,9 +14,10 @@
     border: 0;
     outline: none;
     position: relative;
-    color: black;
     font-weight: 400;
     transition: 0.3s ease;
+    color: #e54b26;
+    borderRadius: 3rem;
 }
 
 .toggle-btn:hover {
@@ -64,27 +65,33 @@
 }
 
 #login .submit-btn {
+    background:transparent;
+    color:#e54b26;
+    border: 2px solid #e54b26;
+    outline: none;
+    borderRadius: 3rem;
     width: 95%;
     height: 24%;
     margin: 200px auto 20px auto;
 }
 
-.submit-btn:hover {
-    background: transparent;
-    color: white;
-    border: 2px solid white;
-}
 
 #joinus .submit-btn {
+    background:transparent;
+    color:#e54b26;
+    border: 2px solid #e54b26;
+    outline: none;
+    borderRadius: 3rem;
     width: 95%;
     height: 18%;
     margin: 260px auto 20px auto;
 }
 
-.submit-btn:hover {
-    background: transparent;
-    color: white;
-    border: 2px solid white;
+#login .submit-btn:hover,
+#joinus .submit-btn:hover {
+    cursor: pointer;
+    background: #e54b26;
+    color: #fff;
 }
 
 .check-box{
@@ -133,10 +140,6 @@
     position: relative;
     width: 100%;
 }
-
-/* #joinus input[name='password'] {
-    width: calc(100% - 20px);
-} */
 
 #joinus span.err-meg{
     font-size: 10px;

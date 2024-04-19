@@ -13,21 +13,21 @@ import { useNavigate } from "react-router-dom";
 import { MenuItems } from './data/NavItems'
 import FlexBetween from './FlexBetween';
 
-const Navbar = ({toggleFormState}) => {
+const Navbar = ({ toggleFormState }) => {
 
 
     const handleLoginClick = () => {
-        navigate('/login'); 
+        navigate('/login');
         toggleFormState()
     };
-    
+
     const handleJoinUsClick = () => {
         navigate('/joinus');
         toggleFormState()
     };
-    
+
     const [isMobileMenuToggled, setIsMobileMenuToggled] = useState(false);
-    const isNonMobileScreens = useMediaQuery("(min-width: 800px)");
+    const isNonMobileScreens = useMediaQuery("(min-width: 970px)");
     const navigate = useNavigate();
 
     return (
@@ -49,7 +49,9 @@ const Navbar = ({toggleFormState}) => {
             }}
         >
             <FlexBetween>
-                <Typography>
+                <Typography sx={{
+                    color: 'white',
+                }}>
                     Fitness Hub
                 </Typography>
             </FlexBetween>
@@ -116,7 +118,9 @@ const Navbar = ({toggleFormState}) => {
                 <IconButton
                     onClick={() => setIsMobileMenuToggled(!isMobileMenuToggled)}
                 >
-                    <Menu />
+                    <Menu sx={{
+                        color: '#e54b26',
+                    }}/>
                 </IconButton>
             )}
 
@@ -178,7 +182,7 @@ const Navbar = ({toggleFormState}) => {
                             border='2px solid #e54b26'
                             outline='none'
                             borderRadius='3rem'
-                            onClick={() => navigate("/login")}
+                            onClick={handleLoginClick}
                             sx={{
                                 "&:hover": {
                                     cursor: "pointer",
@@ -196,7 +200,7 @@ const Navbar = ({toggleFormState}) => {
                             border='none'
                             outline='none'
                             borderRadius='3rem'
-                            onClick={() => navigate("/joinus")}
+                            onClick={handleJoinUsClick}
                             sx={{
                                 "&:hover": {
                                     cursor: "pointer",

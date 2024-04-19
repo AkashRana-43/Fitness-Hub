@@ -5,51 +5,101 @@ import './styles/Form.css';
 import { useNavigate } from "react-router-dom";
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import VisibilityIcon from '@mui/icons-material/Visibility';
+import axios from 'axios';
+
+
 
 const Form = () => {
-
+    //password visibility
     const [showPassword, setShowPassword] = useState(false);
 
     const togglePasswordVisibility = () => {
         setShowPassword(!showPassword);
     };
 
+    //useState 
+    const [loginFormInput, setLoginFormInput] = useState({
+        email: '',
+        password: '',
+    });
 
-    const [formInput, setFormInput] = useState({
-        firstname: '',
-        lastname: '',
+    const [joinUsFormInput, setJoinUsFormInput] = useState({
+        first_name: '',
+        last_name: '',
         email: '',
         password: '',
         confirmPassword: '',
+        user_type: '',
     });
 
-    const [focus, setFocus] = useState({
-        errFirstName: '',
-        errLastName: '',
+    const [loginFormFocus, setLoginFormFocus] = useState({
+        errEmail: '',
+        errPassword: '',
+    });
+
+    const [joinUsFormFocus, setJoinUsFormFocus] = useState({
+        errfirst_name: '',
+        errlast_name: '',
         errEmail: '',
         errPassword: '',
         errConfirmPassword: '',
     });
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-    }
+    const navigate = useNavigate();
 
-    const handleChange = (e) => {
-        const name = e.target.name;
-        const value = e.target.value;
-        setFormInput({ ...formInput, [name]: value });
+    const handleLoginFormChange = (e) => {
+        const { name, value } = e.target;
+        setLoginFormInput({ ...loginFormInput, [name]: value });
         if (value !== '') {
-            setFocus({ ...focus, [`err${name.charAt(0).toUpperCase() + name.slice(1)}`]: false });
+            setLoginFormFocus({ ...loginFormFocus, [`err${name.charAt(0).toUpperCase() + name.slice(1)}`]: false });
         }
     }
 
-    const [showLoginForm, setShowLoginForm] = useState();
-    const navigate = useNavigate();
+    const handleJoinUsFormChange = (e) => {
+        const { name, value } = e.target;
+        setJoinUsFormInput({ ...joinUsFormInput, [name]: value });
+        if (value !== '') {
+            setJoinUsFormFocus({ ...joinUsFormFocus, [`err${name.charAt(0).toUpperCase() + name.slice(1)}`]: false });
+        }
+    }
+
+
+    //toggleForm
+    const [showLoginForm, setShowLoginForm] = useState(true);
 
     function toggleFormState() {
         setShowLoginForm(!showLoginForm);
         navigate(showLoginForm ? '/joinus' : '/login');
+    }
+
+    const handleLoginSubmit = async (e) => {
+        e.preventDefault();
+        try {
+            const response = await axios.post('http://localhost:3001/login', loginFormInput);
+            // Handle response
+            console.log(response.data);
+        } catch (error) {
+            console.error("Error logging in:", error);
+        }
+    };
+
+    const handleSubmitJoinUsForm = async (e) => {
+        e.preventDefault();
+        try {
+            const response = await axios.post('http://localhost:3001/register', joinUsFormInput);
+            console.log(response.data);
+
+            setJoinUsFormInput({
+                first_name: '',
+                last_name: '',
+                email: '',
+                password: '',
+                confirmPassword: '',
+                user_type: ''
+            });
+        } catch (error) {
+            console.error("Error registering:", error);
+        }
     }
 
     return (
@@ -94,10 +144,10 @@ const Form = () => {
 
 
                     {showLoginForm ? (
-                        <form id='login' className='input-group'>
+                        <form id='login' className='input-group' onSubmit={handleLoginSubmit}>
                             <div>
                                 <div className='input-container'>
-                                    <input name='email' type='email' pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$" className='input-field' placeholder='Email' value={formInput.email} onChange={handleChange} onBlur={() => setFocus({ ...focus, errEmail: true })} focus={focus.errEmail.toString()} required />
+                                    <input name='email' type='email' pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}" className='input-field' placeholder='Email' value={loginFormInput.email} onChange={handleLoginFormChange} onBlur={() => setLoginFormFocus({ ...loginFormFocus, errEmail: true })} focus={loginFormFocus.errEmail.toString()} required />
                                     <span className='err-meg'>Enter a valid Email ID</span>
                                 </div>
                                 <div>
@@ -106,6 +156,8 @@ const Form = () => {
                                         type={showPassword ? 'text' : 'password'}
                                         className='input-field'
                                         placeholder='Password'
+                                        value={loginFormInput.password}
+                                        onChange={handleLoginFormChange}
                                         required
                                     />
                                     <span className='icon-eye' onClick={togglePasswordVisibility}>
@@ -120,18 +172,33 @@ const Form = () => {
                             <button type='submit' className='submit-btn' id='btn'>Log In</button>
                         </form>
                     ) : (
-                        <form id='joinus' className='input-group' onSubmit={handleSubmit}>
+                        <form id='joinus' className='input-group' onSubmit={handleSubmitJoinUsForm}>
                             <div style={{ overflow: 'auto', maxHeight: '240px' }}>
                                 <div>
-                                    <input name='firstname' type='text' pattern='^[A-Za-z0-9].{2,16}' className='input-field' placeholder='Firstname' value={formInput.firstname} onChange={handleChange} onBlur={() => setFocus({ ...focus, errFirstName: true })} focus={focus.errFirstName.toString()} required />
+                                    <input name='first_name' type='text' pattern='^[A-Za-z0-9].{2,16}' className='input-field' placeholder='first_name' value={joinUsFormInput.first_name} onChange={handleJoinUsFormChange} onBlur={() => setJoinUsFormFocus({ ...joinUsFormFocus, errfirst_name: true })} focus={joinUsFormFocus.errfirst_name.toString()} required />
                                     <span className='err-meg'>Should have 3-16 character!</span>
                                 </div>
                                 <div>
-                                    <input name='lastname' type='text' pattern='^[A-Za-z0-9].{2,16}' className='input-field' placeholder='Lastname' value={formInput.lastname} onChange={handleChange} onBlur={() => setFocus({ ...focus, errLastName: true })} focus={focus.errLastName.toString()} required />
+                                    <input name='last_name' type='text' pattern='^[A-Za-z0-9].{2,16}' className='input-field' placeholder='last_name' value={joinUsFormInput.last_name} onChange={handleJoinUsFormChange} onBlur={() => setJoinUsFormFocus({ ...joinUsFormFocus, errlast_name: true })} focus={joinUsFormFocus.errlast_name.toString()} required />
                                     <span className='err-meg'>Should have 3-16 character!</span>
                                 </div>
                                 <div>
-                                    <input name='email' type='email' pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$" className='input-field' placeholder='Email' value={formInput.email} onChange={handleChange} onBlur={() => setFocus({ ...focus, errEmail: true })} focus={focus.errEmail.toString()} required />
+                                    <input
+                                        name="user_type"
+                                        list="userTypes"
+                                        className="input-field"
+                                        placeholder="Select User Type"
+                                        value={joinUsFormInput.user_type}
+                                        onChange={handleJoinUsFormChange}
+                                    />
+                                    <datalist id="userTypes">
+                                        <option value="trainer"/>
+                                        <option value="client"/>
+                                    </datalist>
+                                </div>
+
+                                <div>
+                                    <input name='email' type='email' pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}" className='input-field' placeholder='Email' value={joinUsFormInput.email} onChange={handleJoinUsFormChange} onBlur={() => setJoinUsFormFocus({ ...joinUsFormFocus, errEmail: true })} focus={joinUsFormFocus.errEmail.toString()} required />
                                     <span className='err-meg'>Enter a valid Email ID</span>
                                 </div>
                                 <div className='input-container'>
@@ -141,10 +208,10 @@ const Form = () => {
                                         pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[$@$!%*?&])[A-Za-z\d$@$!%*?&].{7,}"
                                         className='input-field'
                                         placeholder='Password'
-                                        value={formInput.password}
-                                        onChange={handleChange}
-                                        onBlur={() => setFocus({ ...focus, errPassword: true })}
-                                        focus={focus.errPassword.toString()}
+                                        value={joinUsFormInput.password}
+                                        onChange={handleJoinUsFormChange}
+                                        onBlur={() => setJoinUsFormFocus({ ...joinUsFormFocus, errPassword: true })}
+                                        focus={joinUsFormFocus.errPassword.toString()}
                                         required
                                     />
                                     <span className='icon-eye' onClick={togglePasswordVisibility}>
@@ -154,7 +221,7 @@ const Form = () => {
                                 </div>
 
                                 <div>
-                                    <input name='confirmPassword' type='password' className='input-field' pattern={formInput.password} placeholder='Confirm Password' value={formInput.confirmPassword} onChange={handleChange} onBlur={() => setFocus({ ...focus, errConfirmPassword: true })} focus={focus.errConfirmPassword.toString()} required />
+                                    <input name='confirmPassword' type='password' className='input-field' pattern={joinUsFormInput.password} placeholder='Confirm Password' value={joinUsFormInput.confirmPassword} onChange={handleJoinUsFormChange} onBlur={() => setJoinUsFormFocus({ ...joinUsFormFocus, errConfirmPassword: true })} focus={joinUsFormFocus.errConfirmPassword.toString()} required />
                                     <span className='err-meg'>Password is not matching!!</span>
                                 </div>
                             </div>
