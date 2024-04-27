@@ -1,48 +1,123 @@
 import React from 'react'
+import classnames from "classnames";
+import {
+    Button,
+    Collapse,
+    NavbarBrand,
+    Navbar,
+    NavItem,
+    NavLink,
+    Nav,
+    Container,
+} from "reactstrap";
+
 
 const NavbarMain = () => {
+    const [navbarColor, setNavbarColor] = React.useState("navbar-transparent");
+    const [navbarCollapse, setNavbarCollapse] = React.useState(false);
+
+    const toggleNavbarCollapse = () => {
+        setNavbarCollapse(!navbarCollapse);
+        document.documentElement.classList.toggle("nav-open");
+    };
+
+    React.useEffect(() => {
+        const updateNavbarColor = () => {
+            if (
+                document.documentElement.scrollTop > 299 ||
+                document.body.scrollTop > 299
+            ) {
+                setNavbarColor("");
+            } else if (
+                document.documentElement.scrollTop < 300 ||
+                document.body.scrollTop < 300
+            ) {
+                setNavbarColor("navbar-transparent");
+            }
+        };
+
+        window.addEventListener("scroll", updateNavbarColor);
+
+        return function cleanup() {
+            window.removeEventListener("scroll", updateNavbarColor);
+        };
+    });
     return (
-        <>
-            <nav className="navbar navbar-expand-lg navigation fixed-top" id="navbar">
-                <div className="container-fluid">
-                    <a className="navbar-brand" href="index.html">
-                        <h2 className="text-white text-capitalize"><i>Gym</i><span className="text-color">Fit</span></h2>
-                    </a>
-                    <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsid"
-                        aria-controls="navbarsid" aria-expanded="false" aria-label="Toggle navigation">
-                        <span className="ti-view-list"></span>
+        <Navbar className={classnames("fixed-top", navbarColor)} expand="lg">
+            <Container>
+                <div className="navbar-translate">
+                    <NavbarBrand
+                        data-placement="bottom"
+                        href="/"
+                    >
+                        Fitness Hub
+                    </NavbarBrand>
+                    <button
+                        aria-expanded={navbarCollapse}
+                        className={classnames("navbar-toggler navbar-toggler", {
+                            toggled: navbarCollapse,
+                        })}
+                        onClick={toggleNavbarCollapse}
+                    >
+                        <span className="navbar-toggler-bar bar1" />
+                        <span className="navbar-toggler-bar bar2" />
+                        <span className="navbar-toggler-bar bar3" />
                     </button>
-                    <div className="collapse text-center navbar-collapse" id="navbarsid">
-                        <ul className="navbar-nav mx-auto">
-
-                            <li className="nav-item active">
-                                <a className="nav-link" href="index.html">Home </a>
-                            </li>
-                            <li className="nav-item dropdown">
-                                <a className="nav-link dropdown-toggle" href="/" data-toggle="dropdown" aria-haspopup="true"
-                                    aria-expanded="false">About Us</a>
-                            </li>
-                            <li className="nav-item">
-                                <a className="nav-link" href="contact.html">Contact</a>
-                            </li>
-                            <li className="nav-item">
-                                <a className="nav-link" href="service.html">Join Us</a>
-                            </li>
-                            <li className="nav-item">
-                                <a className="nav-link" href="pricing.html">LogIN</a>
-                            </li>
-
-                        </ul>
-                        <div className="my-md-0 ml-lg-4 mt-4 mt-lg-0 ml-auto text-lg-right mb-3 mb-lg-0">
-                            <a href="/" style={{ textDecoration: 'none' }}> 
-                                <h3 className="text-color mb-0">Login</h3>
-                            </a>
-                        </div>
-
-                    </div>
                 </div>
-            </nav>
-        </>
+                <Collapse
+                    className="justify-content-end"
+                    navbar
+                    isOpen={navbarCollapse}
+                >
+                    <Nav navbar>
+                        <NavItem>
+                            <NavLink
+                                data-placement="bottom"
+                                href="/"
+                            >
+                                <i className="fa fa-home"/>
+                                <p className="d-lg-none">Home</p>
+                            </NavLink>
+                        </NavItem>
+                        <NavItem>
+                            <NavLink
+                                data-placement="bottom"
+                                href="/"
+                            >
+                                <i className="fa fa-info" />
+                                <p className="d-lg-none">About Us</p>
+                            </NavLink>
+                        </NavItem>
+                        <NavItem>
+                            <NavLink
+                                data-placement="bottom"
+                                href="/"
+                            >
+                                <i className="fa fa-phone" />
+                                <p className="d-lg-none">Contact Us</p>
+                            </NavLink>
+                        </NavItem>
+                        <NavItem>
+                            <NavLink
+                                href="/"
+                            >
+                                Login
+                            </NavLink>
+                        </NavItem>
+                        <NavItem>
+                            <Button
+                                className="btn-round"
+                                color="danger"
+                                href="/"
+                            >
+                                Join Us
+                            </Button>
+                        </NavItem>
+                    </Nav>
+                </Collapse>
+            </Container>
+        </Navbar>
+
     )
 }
 
