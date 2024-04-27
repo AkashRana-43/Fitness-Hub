@@ -19,6 +19,8 @@ const loginRouter = require("./routes/Sign_in");
 const postRouter = require("./routes/Posts");
 const profileRouter = require("./routes/Profile");
 const logoutRouter = require("./routes/Sign_out");
+const addfriendRouter = require("./routes/Add_friends");
+const bulkMessageRouter = require("./routes/Bulk_message");
 
 
 app.use("/register", registerRouter);
@@ -27,6 +29,9 @@ app.use("/login", loginRouter);
 app.use("/posts", checkSessionExpiration, postRouter);
 app.use("/profile", checkSessionExpiration, profileRouter);
 app.use("/logout", checkSessionExpiration, logoutRouter);
+app.use("/add_friend", checkSessionExpiration, addfriendRouter);
+app.use("/verify",loginRouter);
+app.use("/bulk_email",checkSessionExpiration, bulkMessageRouter);
 
 
  db.sequelize.sync().then(() =>{
