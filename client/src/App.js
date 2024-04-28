@@ -10,6 +10,8 @@ import "./ClientPanel/assets/scss/paper-kit.scss";
 // pages
 import Home from './ClientPanel/pages/Home'
 import Profile from "ClientPanel/pages/Profile";
+import Login from "ClientPanel/pages/Login";
+import Register from "ClientPanel/pages/Register";
 
 function App() {
   return (
@@ -18,6 +20,8 @@ function App() {
         <Routes>
           <Route path='/' element={ <Home /> } />
           <Route path='/profile' element={ <Profile /> } />
+          <Route path='/login' element={ <Login /> } />
+          <Route path='/register' element={ <Register /> } />
         </Routes>
       </BrowserRouter>
     </div>

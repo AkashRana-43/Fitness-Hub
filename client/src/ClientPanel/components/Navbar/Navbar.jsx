@@ -99,7 +99,7 @@ const NavbarMain = () => {
                         </NavItem>
                         <NavItem>
                             <NavLink
-                                href="/"
+                                href="/login"
                             >
                                 Login
                             </NavLink>
@@ -108,7 +108,7 @@ const NavbarMain = () => {
                             <Button
                                 className="btn-round"
                                 color="danger"
-                                href="/"
+                                href="/register"
                             >
                                 Join Us
                             </Button>
