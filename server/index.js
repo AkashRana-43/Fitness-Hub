@@ -44,7 +44,8 @@ app.use("/bulk_email",checkSessionExpiration, bulkMessageRouter);
 async function checkSessionExpiration(req, res, next) {
   try {
     // Retrieve the session expiry date from the database based on session id
-    const { session_id } = req.body;
+    const session_id = req.headers.session;
+    // const { session_id } = req.body;
     const sessionExpiry = await Login.findOne({
       where: { session_id: session_id},
       // attributes: ['id', 'expiry']

@@ -7,14 +7,15 @@ router.get("/recieve", async(req, res) => {
     try {
         // Retrieve the session user data
         const { session_user } = req;
-        
+        console.log(session_user);
         const existingUser = await Register.findOne({ where: {email : session_user.email} });
         let output;
         // Check if the session user is an admin
         if (existingUser.user_type == "admin") {
              // User is an admin, get all register data
              output = await Register.findAll();
-        }else{
+        }
+        else{
             // User is not an admin, get register data for the logged-in user
             output = existingUser;
         }
@@ -53,7 +54,7 @@ router.post("/", async (req, res) => {
         });
 
         const newProfile = await Profile.create({
-            email,
+            user_id: newRegister.id,
             first_name,
             last_name
         });
