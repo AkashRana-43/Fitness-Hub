@@ -18,7 +18,7 @@ const Header = () => {
                             <h1 className="presentation-title"><span className='title-front'>FIT</span>ness <br/> <span className='title-front'>HUB</span></h1>
                         </div>
                         <h2 className="presentation-subtitle text-center">
-                            Make your mark with a Free Bootstrap 4 (Reactstrap) UI Kit!
+                           Let's be fit...Join Us
                         </h2>
                     </Container>
                 </div>

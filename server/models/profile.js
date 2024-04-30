@@ -1,12 +1,12 @@
 const { DataTypes } = require("sequelize");
 const { sequelize } = require(".");
+const {Register } = require("../models");
 
 module.exports = (sequelize, DataTypes) => {
     const Profile = sequelize.define("Profile", {
-        email: {
-            type: DataTypes.STRING,
+        user_id: {
+            type: DataTypes.INTEGER,
             allowNull: false,
-            unique: true,
         },
         first_name: {
             type: DataTypes.STRING,
@@ -29,6 +29,10 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: true,
         },
     });
+    // Define associations if needed
+    Profile.associate = (models) => {
+         Profile.belongsTo(models.Register, { foreignKey: 'user_id' });
+     };
 
     return Profile;
 };

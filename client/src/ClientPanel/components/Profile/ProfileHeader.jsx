@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import './css/ProfilePage.css';
 import Img1 from '../../assets/img/bg/BG.jpg';
 
-const ProfileHeader = () => {
+const ProfileHeader = ({firstName, userType}) => {
 
     const [activeTab, setActiveTab] = useState("profile");
 
@@ -42,13 +42,13 @@ const ProfileHeader = () => {
                                 </div>
                             </div>
                             <div className="text-center">
-                                <h5 className="fs-5 mb-0 fw-semibold">Mathew Anderson</h5>
-                                <p className="mb-0 fs-4">Designer</p>
+                                <h5 className="fs-5 mb-0 fw-semibold">{firstName}</h5>
+                                <p className="mb-0 fs-4">{userType}</p>
                             </div>
                         </div>
                     </div>
                     <div className="col-lg-4 order-last text-center">
-                        <button className="btn mx-4" style={{ backgroundColor: "#F5593D", color: "white", border: 'none' }}>Add Friend</button>
+                        <button className="btn mx-4" style={{ backgroundColor: "#F5593D", color: "white", border: 'none' }}>Edit Profile</button>
                     </div>
                 </div>
             </section>

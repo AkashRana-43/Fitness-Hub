@@ -2,10 +2,12 @@ import React, { useState } from 'react';
 import { useNavigate } from "react-router-dom";
 import axios from 'axios';
 import './css/Login.css';
+import { useFetch } from 'ClientPanel/utils/FetchContext';
 
 const LoginForm = ({handleLogin}) => {
 
     const navigate = useNavigate();
+    const { updateUser } = useFetch();
 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -20,7 +22,9 @@ const LoginForm = ({handleLogin}) => {
             });
             console.log(response.data);
             if (response.status === 200) {
-                localStorage.setItem('session', response.data.session);
+                const { session } = response.data;
+                sessionStorage.setItem('session', session);
+                updateUser(response.data);
                 navigate('/')
                 handleLogin(); 
 

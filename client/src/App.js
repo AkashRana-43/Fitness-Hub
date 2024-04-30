@@ -12,6 +12,7 @@ import Login from "ClientPanel/pages/Login";
 import Register from "ClientPanel/pages/Register";
 import { useAuth } from "ClientPanel/utils/AuthContext";
 import Layout from "ClientPanel/layout/Layout";
+import Member from "ClientPanel/pages/Member";
 
 function App() {
 
@@ -25,6 +26,7 @@ function App() {
           <Route path='/profile' element={isLoggedIn? <Layout><Profile /> </Layout> : <Navigate to= '/' /> } />
           <Route path='/login' element={<Login />} />
           <Route path='/register' element={ <Register /> } />
+          <Route path='/members' element={ <Member /> } />
         </Routes>
       </BrowserRouter>
     </div>

@@ -19,7 +19,7 @@ module.exports = (sequelize, DataTypes) => {
         },
         is_verified: {
             type: DataTypes.BOOLEAN,
-            defaultValue: false, 
+            defaultValue: false, // Assuming default is not verified
         },
         is_blocked: {
             type: DataTypes.BOOLEAN,

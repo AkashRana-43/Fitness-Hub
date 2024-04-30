@@ -13,6 +13,7 @@ import {
   Nav,
   Container,
 } from 'reactstrap';
+import logo from  '../../assets/img/Fitness_Hub_logo3.png'
 
 const NavbarMain = ({ isLoggedIn, handleLogout }) => {
   const [navbarColor, setNavbarColor] = React.useState('navbar-transparent');
@@ -54,7 +55,7 @@ const NavbarMain = ({ isLoggedIn, handleLogout }) => {
       <Container>
         <div className="navbar-translate">
           <NavbarBrand data-placement="bottom" to="/" tag={Link}>
-            Fitness Hub
+            <img src={logo} alt="Fitness Hub" style={{ width: '40px', height: '40px' }}/>
           </NavbarBrand>
           <button
             aria-expanded={navbarCollapse}
@@ -93,12 +94,19 @@ const NavbarMain = ({ isLoggedIn, handleLogout }) => {
               </NavLink>
             </NavItem>
             <NavItem>
+              {isLoggedIn && (
+                <NavLink tag={Link} to="/members">
+                  Member
+                </NavLink>
+              )}
+            </NavItem>
+            <NavItem>
               {isLoggedIn ? (
                 <NavLink onClick={handleLogout} to="#">
                   Logout
                 </NavLink>
               ) : (
-                <NavLink tag={Link} to="/login">Login</NavLink> 
+                <NavLink tag={Link} to="/login">Login</NavLink>
               )}
             </NavItem>
             <NavItem>
