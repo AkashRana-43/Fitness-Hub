@@ -1,15 +1,21 @@
-import React from 'react'
-import Navbar from '../components/Navbar/Navbar'
-import Footer from '../components/Footer/Footer'
+import React from 'react';
+import Navbar from '../components/Navbar/Navbar';
+import Footer from '../components/Footer/Footer';
+import { useAuth } from 'ClientPanel/utils/AuthContext';
 
-const Layout = ({children}) => {
+const Layout = ({ children }) => {
+
+  const { isLoggedIn, handleLogin, handleLogout } = useAuth();
+
   return (
     <>
-        <Navbar/>
-        <div>{children}</div>
-        <Footer/>
+      <Navbar isLoggedIn={isLoggedIn} handleLogin={handleLogin} handleLogout={handleLogout} />
+      <div>
+        {children}
+      </div>
+      <Footer />
     </>
-  )
-}
+  );
+};
 
-export default Layout
+export default Layout;

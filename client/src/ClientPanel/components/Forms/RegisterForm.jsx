@@ -1,45 +1,81 @@
-import React, { useState } from 'react'
+import React, { useState } from 'react';
+import { useNavigate } from "react-router-dom";
 import './css/Register.css';
 
 const RegisterForm = () => {
-    //User type Selector 
-    const [selectedOption, setSelectedOption] = useState('Trainer');
+
+    const navigate = useNavigate();
+
+    const [userType, setUserType] = useState('Trainer');
+    const [formData, setFormData] = useState({
+        first_name: '',
+        last_name: '',
+        email: '',
+        password: ''
+    });
 
     const handleOptionSelect = (option) => {
-        setSelectedOption(option);
+        setUserType(option);
+    };
+
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setFormData({
+            ...formData,
+            [name]: value
+        });
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        try {
+            const response = await fetch('http://localhost:3001/register', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    ...formData,
+                    user_type: userType 
+                })
+            });
+            const data = await response.json();
+            console.log('Registration successful:', data);
+        } catch (error) {
+            console.error('Registration failed:', error);
+        }
+        navigate('/login');
     };
 
     return (
         <div className="background">
             <div className="wrapper">
-                <form action="">
+                <form onSubmit={handleSubmit}>
                     <h1>Join Us</h1>
                     <div className='input-row'>
                         <div className="input-box">
-                            <input type="text" placeholder="Firstname" required />
+                            <input type="text" name="first_name" placeholder="Firstname" value={formData.first_name} onChange={handleChange} required />
                             <i className='bx bxs-user'></i>
                         </div>
                         <div className="input-box">
-                            <input type="text" placeholder="Lastname" required />
+                            <input type="text" name="last_name" placeholder="Lastname" value={formData.last_name} onChange={handleChange} required />
                             <i className='bx bxs-user'></i>
                         </div>
                     </div>
                     <div className='input-col'>
                         <div className="input-box">
-                            <input type="email" placeholder="Email" required />
+                            <input type="email" name="email" placeholder="Email" value={formData.email} onChange={handleChange} required />
                             <i className='bx bxs-user'></i>
                         </div>
-
                         <div className="dropdown">
-                            <button className="dropdown-btn" type="button">{selectedOption}</button>
+                            <button className="dropdown-btn" type="button">{userType}</button>
                             <div className="dropdown-content">
                                 <p onClick={() => handleOptionSelect('Trainer')}>Trainer</p>
                                 <p onClick={() => handleOptionSelect('Client')}>Client</p>
                             </div>
                         </div>
-
                         <div className="input-box">
-                            <input type="password" placeholder="Password" required />
+                            <input type="password" name="password" placeholder="Password" value={formData.password} onChange={handleChange} required />
                             <i className='bx bxs-lock-alt'></i>
                         </div>
                         <div className="input-box">
@@ -47,7 +83,7 @@ const RegisterForm = () => {
                             <i className='bx bxs-lock-alt'></i>
                         </div>
                         <div>
-                            <button type="submit" class="btn">Join</button>
+                            <button type="submit" className="btn">Join</button>
                         </div>
                         <div className='no-account'>
                             <p>Already have an account? <a href="/login">Login</a></p>
@@ -56,7 +92,7 @@ const RegisterForm = () => {
                 </form>
             </div>
         </div>
-    )
-}
+    );
+};
 
-export default RegisterForm
+export default RegisterForm;
