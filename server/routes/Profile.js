@@ -84,15 +84,17 @@ router.put("/", async (req, res) => {
         const { session_user } = req;
         console.log(session_user);
         // Retrieve the updated user data from the request body
-        const {first_name, last_name, contact, address, profile_image } = req.body;
+        const {user_id, first_name, last_name, contact, address, profile_image } = req.body;
         const existingUser = await Register.findOne({ where: {email : session_user.email} });
         let updating_user;
         // Check if the session user is an admin
         if (existingUser.user_type !== "admin") {
              // Find the user in the Register model by their ID
-            updating_user = existingUser;
+            updating_user = await Profile.findOne({ where: { user_id: existingUser.id } });
+        }else{
+            updating_user = await Profile.findOne({ where: { user_id: user_id } });
         }
-        updating_user = await Profile.findOne({ where: { user_id: existingUser.id } });
+        
         // If the user doesn't exist, return an error
         if (!updating_user) {
             return res.status(404).json({ error: "User not found." });

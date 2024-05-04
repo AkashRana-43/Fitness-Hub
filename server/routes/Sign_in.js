@@ -6,7 +6,7 @@ const router = express.Router();
 const bcrypt = require('bcrypt');
 const session = require('express-session');
 const { Register, Login, Profile } = require("../models");
-const { sendEmail } = require('./mail');
+const { sendToken } = require('./mail');
 
 
 // Route to handle user verification
@@ -31,13 +31,13 @@ router.get('/', async (req, res) => {
             res.status(404).json({ error: 'Email not found' });
         }
 
-        res.status(200).json({ message: 'User verified successfully.' });
+        res.redirect('http://localhost:3000/login');
+        
     } catch (error) {
         console.error('Error:', error);
         res.status(500).json({ error: 'An error occurred during verification.' });
     }
 });
-
 
 router.post("/", async (req, res) => {
     try {
@@ -57,17 +57,11 @@ router.post("/", async (req, res) => {
 
         // Check if the user's email is verified
         if (!existingUser.is_verified) {
-            // Generate a verification token (hash) for the email
-            const verificationToken = await bcrypt.hash(email, 10);
-            // If the email is not verified, send a verification link via email
-            const verificationLink = `http://localhost:3001/verify?token=${verificationToken}&email=${email}`;
-            const html = `<p>Please click the following link to verify your email: <a href="${verificationLink}">${verificationLink}</a></p>`;
-            
-            await sendEmail(email, 'Email Verification', html);
+            // Send verification token
+            const verification = sendToken(email);
 
             return res.status(403).json({ 
-                error: "Email not verified. Verification link has been sent to your email.",
-                verificationLink: verificationLink
+                error: "Email not verified. Verification link has been sent to your email."
             });
         }
 
