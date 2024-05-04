@@ -1,21 +1,34 @@
-import {BrowserRouter, Routes, Route} from 'react-router-dom'
-import Home from './pages/Home';
-import About from './pages/About';
-import Contact from './pages/Contact';
-
+import Topbar from "./components/topbar/Topbar";
+import Sidebar from "./components/topbar/sidebar/Sidebar";
+import "./app.css"
+import Home from "./components/pages/home/Home";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route
+} from "react-router-dom";
+import UserList from "./components/pages/userList/UserList";
+import User from "./components/pages/user/User";
+import NewUser from "./components/pages/newUser/NewUser";
 
 function App() {
   return (
-    <div>
-      <BrowserRouter>
+    <Router>
+      <Topbar/>
+      <div className="container">
+        <Sidebar/>
         <Routes>
-          <Route path='/' element={ <Home /> } />
-          <Route path='/about' element={ <About /> } />
-          <Route path='/contact' element={ <Contact /> } />
-
+          {/*Route component for setting up the path, element prop for rendering the Home component */}
+          <Route path="/" element={<Home />} /> 
+          <Route path="/users" element={<UserList />} />
+          {/* Route for rendering the User component with a dynamic userId parameter */}
+          <Route path="/user/:userId" element={<User />}/> 
+          <Route path="/newUser" element={<NewUser/>}/>
         </Routes>
-      </BrowserRouter>
-    </div>
+        
+        
+      </div>
+    </Router>
   );
 }
 

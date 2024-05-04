@@ -1,5 +1,5 @@
 {
-  "name": "client",
+  "name": "fypadmin",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -7,13 +7,17 @@
     "@emotion/styled": "^11.11.0",
     "@mui/icons-material": "^5.15.14",
     "@mui/material": "^5.15.14",
+    "@mui/x-data-grid": "^6.19.10",
+    "@mui/x-data-grid-generator": "^6.19.10",
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
+    "axios": "^1.6.8",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.22.3",
     "react-scripts": "5.0.1",
+    "recharts": "^2.12.3",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
@@ -39,13 +43,5 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  },
-  "devDependencies": {
-    "@babel/plugin-proposal-private-property-in-object": "^7.21.11"
-  },
-  
-  "description": "This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).",
-  "main": "index.js",
-  "author": "",
-  "license": "ISC"
+  }
 }
