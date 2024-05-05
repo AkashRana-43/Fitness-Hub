@@ -13,7 +13,7 @@ import {
   Nav,
   Container,
 } from 'reactstrap';
-import logo from  '../../assets/img/Fitness_Hub_logo3.png'
+import logo from '../../assets/img/logo.PNG'
 
 const NavbarMain = ({ isLoggedIn, handleLogout }) => {
   const [navbarColor, setNavbarColor] = React.useState('navbar-transparent');
@@ -54,9 +54,27 @@ const NavbarMain = ({ isLoggedIn, handleLogout }) => {
     <Navbar className={classnames('fixed-top', navbarColor)} expand="lg">
       <Container>
         <div className="navbar-translate">
-          <NavbarBrand data-placement="bottom" to="/" tag={Link}>
-            <img src={logo} alt="Fitness Hub" style={{ width: '40px', height: '40px' }}/>
+          <NavbarBrand data-placement="bottom" to="/" tag={Link} style={{ display: 'inline-block' }}>
+            <img
+              src={logo}
+              alt="Fitness Hub"
+              style={{
+                maxWidth: '100%',
+                height: 'auto',
+                width: 'auto',
+                maxHeight: '100px',
+                display: 'block',
+                '@media (max-width: 768px)': {
+                  maxHeight: '80px'
+                },
+                '@media (max-width: 576px)': {
+                  maxHeight: '60px'
+                }
+              }}
+            />
           </NavbarBrand>
+
+
           <button
             aria-expanded={navbarCollapse}
             className={classnames('navbar-toggler navbar-toggler', {
@@ -82,7 +100,7 @@ const NavbarMain = ({ isLoggedIn, handleLogout }) => {
               </NavLink>
             </NavItem>
             <NavItem>
-              <NavLink data-placement="bottom" to="/" tag={Link}>
+              <NavLink data-placement="bottom" to="/about" tag={Link}>
                 <i className="fa fa-info" />
                 <p className="d-lg-none">About Us</p>
               </NavLink>

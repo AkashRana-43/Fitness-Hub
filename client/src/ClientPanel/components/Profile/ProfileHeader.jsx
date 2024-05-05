@@ -1,14 +1,9 @@
-import React, { useState } from 'react';
+import React from 'react';
 import './css/ProfilePage.css';
 import Img1 from '../../assets/img/bg/BG.jpg';
 
-const ProfileHeader = ({firstName, userType}) => {
+const ProfileHeader = ({ firstName, userType, activeTab, onTabChange }) => {
 
-    const [activeTab, setActiveTab] = useState("profile");
-
-    const handleTabClick = (tab) => {
-        setActiveTab(tab);
-    }
 
     return (
         <>
@@ -58,7 +53,7 @@ const ProfileHeader = ({firstName, userType}) => {
                         <button
                             className={`nav-link position-relative rounded-0 d-flex align-items-center justify-content-center bg-transparent fs-3 py-6 border-0 ${activeTab === "profile" ? "active" : ""}`}
                             id="pills-profile-tab"
-                            onClick={() => handleTabClick("profile")}
+                            onClick={() => onTabChange("profile")} 
                             type="button"
                             role="tab"
                             aria-controls="pills-profile"
@@ -73,7 +68,7 @@ const ProfileHeader = ({firstName, userType}) => {
                         <button
                             className={`nav-link position-relative rounded-0 d-flex align-items-center justify-content-center bg-transparent fs-3 py-6 border-0 ${activeTab === "friends" ? "active" : ""}`}
                             id="pills-friends-tab"
-                            onClick={() => handleTabClick("friends")}
+                            onClick={() => onTabChange("friends")} 
                             type="button"
                             role="tab"
                             aria-controls="pills-friends"
@@ -86,7 +81,6 @@ const ProfileHeader = ({firstName, userType}) => {
                         </button>
                     </li>
                 </ul>
-
             </div>
         </>
     );

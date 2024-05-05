@@ -1,0 +1,74 @@
+
+/* #team {
+  padding: 80px 0;
+} */
+
+/* Team member card */
+.team-member {
+  text-align: center;
+  margin-bottom: 50px;
+}
+
+/* Team member image */
+.team-member img {
+  border-radius: 50%;
+  width: 14rem; 
+  height: 14rem; 
+  border: 0.5rem solid rgba(0, 0, 0, 0.1);
+}
+
+/* Team member name */
+.team-member h4 {
+  margin-top: 20px;
+  margin-bottom: 10px;
+  font-size: 24px;
+}
+
+/* Team member role */
+.team-member p {
+  margin-bottom: 20px;
+  font-size: 18px;
+  color: #777;
+}
+
+/* Social links */
+.social-links {
+  margin-top: 20px;
+}
+
+/* Social link buttons */
+.btn-social {
+  font-size: 20px;
+  width: 50px;
+  height: 50px;
+  line-height: 50px;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+}
+
+/* Social link button hover effect */
+.btn-social:hover {
+  transform: scale(1.1);
+}
+
+/* Adjustments for smaller screens */
+@media (max-width: 768px) {
+  /* Team member image size adjustment */
+  .team-member img {
+      max-width: 120px; /* Adjust size as needed */
+  }
+  
+  /* Reduce bottom margin for smaller screens */
+  .team-member {
+      margin-bottom: 30px;
+  }
+  
+  /* Adjust font sizes for smaller screens */
+  .team-member h4 {
+      font-size: 20px;
+  }
+  
+  .team-member p {
+      font-size: 16px;
+  }
+}

@@ -13,6 +13,7 @@ import Register from "ClientPanel/pages/Register";
 import { useAuth } from "ClientPanel/utils/AuthContext";
 import Layout from "ClientPanel/layout/Layout";
 import Member from "ClientPanel/pages/Member";
+import About from "ClientPanel/pages/About";
 
 function App() {
 
@@ -23,10 +24,11 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route path='/' element={ <Home /> } />
-          <Route path='/profile' element={isLoggedIn? <Layout><Profile /> </Layout> : <Navigate to= '/' /> } />
+          <Route path='/profile' element={isLoggedIn? <Layout showFooter = {false}><Profile /> </Layout> : <Navigate to= '/' /> } />
           <Route path='/login' element={<Login />} />
           <Route path='/register' element={ <Register /> } />
-          <Route path='/members' element={ <Member /> } />
+          <Route path='/members' element={isLoggedIn? <Layout showFooter = {false}><Member /> </Layout> : <Navigate to= '/' /> } />
+          <Route path='/about' element={ <About /> } />
         </Routes>
       </BrowserRouter>
     </div>

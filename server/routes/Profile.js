@@ -14,7 +14,7 @@ router.get("/", async (req, res) => {
         const existingUser = await Register.findOne({ where: {email : session_user.email} });
         let output;
         // Check if the session user is an admin
-        if (existingUser.user_type === "admin" || existingUser.user_type === "normal" || existingUser.user_type === "trainer") {
+        if (existingUser.user_type === "admin" || existingUser.user_type === "Client" || existingUser.user_type === "Trainer") {
             output = await Profile.findOne({ where: { user_id: existingUser.id } });
             
         }else{
@@ -37,7 +37,7 @@ router.get("/allusers", async (req, res) => {
             const existingUser = await Register.findOne({ where: {email : session_user.email} });
             let output;
             // Check if the session user is an admin
-            if (existingUser.user_type === "admin" || existingUser.user_type === "normal" || existingUser.user_type === "trainer") {
+            if (existingUser.user_type === "admin" || existingUser.user_type === "Client" || existingUser.user_type === "Trainer") {
 
                 // Get the IDs of users who are friends with the existingUser
                 const friendIds = await AddFriend.findAll({
@@ -54,11 +54,11 @@ router.get("/allusers", async (req, res) => {
                     return ids;
                 });                
 
-                 // User is an admin, get all profile data for users with user_type "normal" or "trainer"
+            
                 output = await Profile.findAll({
                             include: [{
                                 model: Register,
-                                where: { user_type: ["normal", "trainer"],
+                                where: { user_type: ["Client", "Trainer"],
                                 id: { [Sequelize.Op.notIn]: [friendIds, existingUser.id] }
                             },
                                 attributes: []

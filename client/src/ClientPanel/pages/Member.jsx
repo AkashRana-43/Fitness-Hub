@@ -1,16 +1,21 @@
-import React from 'react'
+import React, {useState} from 'react'
 import Layout from 'ClientPanel/layout/Layout'
-import MembersList from 'ClientPanel/components/Member/MembersList'
+import MemberList from 'ClientPanel/components/Member/MemberList'
 import MemberHeader from 'ClientPanel/components/Member/MemberHeader'
+import FriendRequest from 'ClientPanel/components/Member/FriendRequest'
 
 const Member = () => {
 
+  const [activeTab, setActiveTab] = useState("profile");
 
+  const handleTabChange = (tab) => {
+    setActiveTab(tab);
+  }
 
   return (
-    <Layout>
-        <MemberHeader />
-        <MembersList />
+    <Layout showFooter = {false}>
+        <MemberHeader activeTab={activeTab} onTabChange={handleTabChange} />
+        {activeTab === "profile" ? <MemberList/> : <FriendRequest /> }
     </Layout>
   )
 }

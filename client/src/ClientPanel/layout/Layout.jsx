@@ -3,7 +3,7 @@ import Navbar from '../components/Navbar/Navbar';
 import Footer from '../components/Footer/Footer';
 import { useAuth } from 'ClientPanel/utils/AuthContext';
 
-const Layout = ({ children }) => {
+const Layout = ({ children, showFooter = true }) => {
 
   const { isLoggedIn, handleLogin, handleLogout } = useAuth();
 
@@ -13,7 +13,7 @@ const Layout = ({ children }) => {
       <div>
         {children}
       </div>
-      <Footer />
+      {showFooter && <Footer />}
     </>
   );
 };
