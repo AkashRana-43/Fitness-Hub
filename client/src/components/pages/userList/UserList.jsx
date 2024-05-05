@@ -40,7 +40,7 @@ export default function UserList() {
           
           console.log(sessionId);
           
-          fetch('http://localhost:3001/register_detail/recieve', {
+          fetch('http://localhost:3001/profile/allusers', {
               method: 'GET',
               headers: {
                 'session': `${sessionId}`,
@@ -91,29 +91,32 @@ export default function UserList() {
     
     
     const columns = [
-        { field: 'id', headerName: 'ID', width: 70 },
-        // { field: 'first_name', headerName: 'First Name', width: 150,
-        //     // renderCell: (params) => {
-        //     //     return (
-        //     //         <div className="userListUser">
-        //     //             <img className="userListImage" src={params.row.profile_image} alt="Profile" srcset="" />
-        //     //             {params.row.username}
-        //     //         </div>
-        //     //     )
-        //     // }
+      
+        { field: 'user_id', headerName: 'User_ID', width: 70 },
+        { field: 'first_name', headerName: 'First Name', width: 150,
+            // renderCell: (params) => {
+            //     return (
+            //         <div className="userListUser">
+            //             <img className="userListImage" src={params.row.profile_image} alt="Profile" srcset="" />
+            //             {params.row.username}
+            //         </div>
+            //     )
+            // }
+        },
+        { field: 'last_name', headerName: 'Last Name', width: 150 },
+        // {
+        //   field: 'email',
+        //   headerName: 'Email',
+        //   width: 200,
         // },
-        // { field: 'last_name', headerName: 'Last Name', width: 150 },
-        {
-          field: 'email',
-          headerName: 'Email',
-          width: 200,
-        },
-        {
-          field: 'user_type',
-          headerName: 'User Type',
-          width: 150,
+        // {
+        //   field: 'user_type',
+        //   headerName: 'User Type',
+        //   width: 150,
 
-        },
+        // },
+        { field: 'contact', headerName: 'Contact', width: 150 },
+        { field: 'address', headerName: 'Address', width: 150 },
         {
             field:'action',
             headerName:'Action',
@@ -121,7 +124,8 @@ export default function UserList() {
             renderCell: (params) => {
                 return (
                     <div className="userListAction">
-                        <Link to = {"/user/" + params.row.id}>
+                        <Link to = {"/user/" + params.row.user_id}>
+                          
                             <button className="userListEdit">Edit</button>
                         </Link>
                         
@@ -141,12 +145,13 @@ export default function UserList() {
         <select className= "userDropdownicon" value={selectedRole} onChange={handleRoleChange}>
           <option value="All_User">All User</option>
           <option value="Trainer">Trainer</option>
-          <option value="Customer">Customer</option>
+          <option value="Normal">Customer</option>
         </select>
       </div>
         <DataGrid
         rows={filteredData} // Use filteredData instead of data
         columns={columns}
+        getRowId={(row) => row.user_id}
         initialState={{
           pagination: {
             paginationModel: { page: 0, pageSize: 8 },
