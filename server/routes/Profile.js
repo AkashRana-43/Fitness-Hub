@@ -55,17 +55,28 @@ router.get("/allusers", async (req, res) => {
                 });                
 
                  // User is an admin, get all profile data for users with user_type "normal" or "trainer"
-                output = await Profile.findAll({
+                profile_detail = await Profile.findAll({
                             include: [{
                                 model: Register,
                                 where: { user_type: ["normal", "trainer"],
                                 id: { [Sequelize.Op.notIn]: [friendIds, existingUser.id] }
                             },
-                                attributes: []
+                                attributes: ['user_type']
                             }],
                             attributes: ['user_id', 'first_name', 'last_name', 'contact', 'address', 'profile_image']
                 });  
-                console.log(output);
+
+                // Process the result to access user_type attribute
+                const processedResult = profile_detail.map(profile => ({
+                    user_id: profile.user_id,
+                    first_name: profile.first_name,
+                    last_name: profile.last_name,
+                    contact: profile.contact,
+                    address: profile.address,
+                    profile_image: profile.profile_image,
+                    user_type: profile.Register.user_type // Access user_type from the Register object
+                }));
+                output = processedResult;
             } else {
                 // For non-admin users, return unauthorized error
                 return res.status(403).json({ error: "Unauthorized access." });
