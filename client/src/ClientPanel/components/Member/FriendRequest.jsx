@@ -1,23 +1,49 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import './css/FriendReq.css';
 import Img1 from '../../assets/img/bg/BG.jpg';
+import axios from 'axios';
 
 const FriendRequest = () => {
-    // Array of hardcoded requesters
-    const requesters = [
-        {
-            name: "Sophia",
-            role: "Client",
-            profilePic: Img1, 
-            profileLink: '#' 
-        },
-        {
-            name: "Rohit",
-            role: "Client",
-            profilePic: Img1,
-            profileLink: '#' 
-        },
-    ];
+    const [requesters, setRequesters] = useState([]);
+
+    useEffect(() => {
+        fetchFriendRequests();
+    }, []);
+
+    const fetchFriendRequests = async () => {
+        try {
+            const session = sessionStorage.getItem('session');
+            const response = await axios.get('http://localhost:3001/add_friend/requests', {
+                headers: {
+                    'session': session,
+                }
+            });
+            setRequesters(response.data);
+            console.log('Requester:', response.data);
+        } catch (error) {
+            console.error('Error fetching friend requests:', error);
+        }
+    };
+
+    const handleDecision = async (requesterId, action) => {
+        try {
+            const session = sessionStorage.getItem('session');
+            const response = await axios.put('http://localhost:3001/add_friend/request/decision', {
+                requesterId: requesterId,
+                action: action,
+            }, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'session': session,
+                }
+            });
+            console.log(response.data.message);
+            // After successful response, update the UI by refetching friend requests
+            fetchFriendRequests();
+        } catch (error) {
+            console.error('Error making decision:', error);
+        }
+    };
 
     return (
         <>
@@ -37,24 +63,28 @@ const FriendRequest = () => {
 
             <div className="container">
                 <div className="row">
-                    <div className="col-md-12"> 
+                    <div className="col-md-12">
                         <div className="people-nearby">
                             {requesters.map((requester, index) => (
                                 <div key={index} className="nearby-user">
-                                    <div className="row align-items-center"> 
+                                    <div className="row align-items-center">
                                         <div className="col-md-2 col-sm-2">
-                                            <img src={requester.profilePic} alt="user" className="profile-photo-lg" />
+                                            <img src={requester.profilePic || Img1} alt="user" className="profile-photo-lg" />
                                         </div>
-                                        <div className="col-md-2 col-sm-2"> 
-                                            <h5 style={{marginBottom: 0}}><a href={requester.profileLink} className="profile-link" style={{ color: '#F5593D', fontWeight: 'bold' }}>{requester.name}</a></h5>
-                                            <p style={{marginBottom: 0}}>{requester.role}</p> 
+                                        <div className="col-md-2 col-sm-2">
+                                            <h5 style={{ marginBottom: 0 }}>
+                                                <a href={requester.profileLink || '#'} className="profile-link" style={{ color: '#F5593D', fontWeight: 'bold' }}>
+                                                    {requester.name}
+                                                </a>
+                                            </h5>
+                                            <p style={{ marginBottom: 0 }}>{requester.role}</p>
                                         </div>
                                         <div className="col-md-6 col-sm-6"></div>
                                         <div className="col-md-1 col-sm-1">
-                                            <button className="btn btn-primary btn-sm">Accept</button> 
+                                            <button className="btn btn-primary btn-sm" onClick={() => handleDecision(requester.requesterId, 'accept')}>Accept</button>
                                         </div>
                                         <div className="col-md-1 col-sm-1">
-                                            <button className="btn btn-danger btn-sm">Reject</button> 
+                                            <button className="btn btn-danger btn-sm" onClick={() => handleDecision(requester.requesterId, 'reject')}>Reject</button>
                                         </div>
                                     </div>
                                 </div>
