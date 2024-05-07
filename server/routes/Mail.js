@@ -34,25 +34,21 @@ const sendEmail = async (to, subject, html) => {
     }
 };
 
-// Route to handle user verification
-router.get('/verify/:token/:email/', async (req, res) => {
-    try {
-        const { token, email } = req.params;
-
-        // Find the user based on the verification token
-        const user = await bcrypt.compare(token, email);
-        if (!user) {
-            return res.status(404).json({ error: 'User not found or token expired.' });
-        }
-
-        // Update the is_verified field to true
-        await user.update({ is_verified: true });
-
-        res.status(200).json({ message: 'User verified successfully.' });
+const sendToken =  async (email) => {
+    try{
+        // Generate a verification token (hash) for the email
+        const verificationToken = await bcrypt.hash(email, 10);
+        const verificationLink = `http://localhost:3001/verify?token=${verificationToken}&email=${email}`;
+        const html = `<p>Please click the following link to verify your email: <a href="${verificationLink}">${verificationLink}</a></p>`;
+                
+        await sendEmail(email, 'Email Verification', html);
+        console.log(verificationLink);
+        return verificationLink;
     } catch (error) {
-        console.error('Error:', error);
-        res.status(500).json({ error: 'An error occurred during verification.' });
+        console.error('Error while creating token:', error);
+        throw error;
     }
-});
+};
 
-module.exports = { sendEmail };
+
+module.exports = { sendEmail, sendToken };

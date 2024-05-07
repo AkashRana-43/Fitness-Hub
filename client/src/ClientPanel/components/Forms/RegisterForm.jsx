@@ -15,7 +15,8 @@ const RegisterForm = () => {
     });
 
     const handleOptionSelect = (option) => {
-        setUserType(option);
+        // setUserType(option);
+        setUserType(option === 'trainer' ? 'trainer' : 'normal');
     };
 
     const handleChange = (e) => {
@@ -68,10 +69,10 @@ const RegisterForm = () => {
                             <i className='bx bxs-user'></i>
                         </div>
                         <div className="dropdown">
-                            <button className="dropdown-btn" type="button">{userType}</button>
+                            <button className="dropdown-btn" type="button">{userType === 'trainer' ? 'Trainer' : 'Client'}</button>
                             <div className="dropdown-content">
-                                <p onClick={() => handleOptionSelect('Trainer')}>Trainer</p>
-                                <p onClick={() => handleOptionSelect('Client')}>Client</p>
+                                <p onClick={() => handleOptionSelect('trainer')}>Trainer</p>
+                                <p onClick={() => handleOptionSelect('normal')}>Client</p>
                             </div>
                         </div>
                         <div className="input-box">

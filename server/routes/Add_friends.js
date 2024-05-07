@@ -74,30 +74,24 @@ router.post('/request', async (req, res) => {
     try {
         const { recipientId } = req.body;
         const { session_user } = req;
-
-        // Check if recipientId is provided
-        if (!recipientId) {
-            return res.status(400).json({ error: 'Recipient ID is required.' });
-        }
-
-        // Retrieve the session user's information
-        const existingUser = await Register.findOne({ where: { email: session_user.email } });
-
-        // Check if the session user exists
-        if (!existingUser) {
-            return res.status(404).json({ error: 'Session user not found.' });
-        }
-
-        // Check if the recipient exists
+        
+        // Retrieve the updated user data from the request body
+        const existingUser = await Register.findOne({ where: {email : session_user.email} });
+        // Check if both requesterId and recipientId are provided
+        // Check if the recipientId exists
         const recipientExists = await Register.findOne({ where: { id: recipientId } });
+
         if (!recipientExists) {
             return res.status(404).json({ error: 'Recipient not found.' });
         }
-
+        if (!recipientId) {
+            return res.status(400).json({ error: 'recipientId are required.' });
+        }
+        const requesterId = existingUser.id ; 
         // Check if the friend request already exists
         const existingRequest = await AddFriend.findOne({
             where: {
-                requesterId: existingUser.id,
+                requesterId,
                 recipientId
             }
         });
@@ -108,7 +102,7 @@ router.post('/request', async (req, res) => {
 
         // Create a new friend request
         const newRequest = await AddFriend.create({
-            requesterId: existingUser.id,
+            requesterId,
             recipientId
         });
 

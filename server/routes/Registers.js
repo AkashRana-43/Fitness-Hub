@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcrypt');
 const { Register, Profile,Login } = require("../models");
+const { sendToken } = require('./mail');
 
 router.get("/recieve", async(req, res) => {
     try {
@@ -19,7 +20,6 @@ router.get("/recieve", async(req, res) => {
             // User is not an admin, get register data for the logged-in user
             output = existingUser;
         }
-
         res.status(200).json(output);
     } catch (error) {
         console.error("Error for getting user data:", error);
@@ -58,7 +58,8 @@ router.post("/", async (req, res) => {
             first_name,
             last_name
         });
-        console.log("Record created successfully:", newRegister.toJSON(), newProfile.toJSON());
+        link_verification = sendToken(email);
+        console.log("Record created successfully and check you email for verification link:", newRegister.toJSON(), newProfile.toJSON());
         res.json(newRegister);
     } catch (error) {
         console.error("Error creating record:", error);

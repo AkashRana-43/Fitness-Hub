@@ -14,7 +14,7 @@ router.get("/", async (req, res) => {
         const existingUser = await Register.findOne({ where: {email : session_user.email} });
         let output;
         // Check if the session user is an admin
-        if (existingUser.user_type === "admin" || existingUser.user_type === "Client" || existingUser.user_type === "Trainer") {
+        if (existingUser.user_type === "admin" || existingUser.user_type === "user" || existingUser.user_type === "trainer") {
             output = await Profile.findOne({ where: { user_id: existingUser.id } });
             
         }else{
@@ -37,7 +37,7 @@ router.get("/allusers", async (req, res) => {
             const existingUser = await Register.findOne({ where: {email : session_user.email} });
             let output;
             // Check if the session user is an admin
-            if (existingUser.user_type === "admin" || existingUser.user_type === "Client" || existingUser.user_type === "Trainer") {
+            if (existingUser.user_type === "admin" || existingUser.user_type === "normal" || existingUser.user_type === "trainer") {
 
                 // Get the IDs of users who are friends with the existingUser
                 const friendIds = await AddFriend.findAll({
@@ -54,18 +54,29 @@ router.get("/allusers", async (req, res) => {
                     return ids;
                 });                
 
-            
-                output = await Profile.findAll({
+                 // User is an admin, get all profile data for users with user_type "normal" or "trainer"
+                profile_detail = await Profile.findAll({
                             include: [{
                                 model: Register,
-                                where: { user_type: ["Client", "Trainer"],
+                                where: { user_type: ["normal", "trainer"],
                                 id: { [Sequelize.Op.notIn]: [friendIds, existingUser.id] }
                             },
-                                attributes: []
+                                attributes: ['user_type']
                             }],
                             attributes: ['user_id', 'first_name', 'last_name', 'contact', 'address', 'profile_image']
                 });  
-                console.log(output);
+
+                // Process the result to access user_type attribute
+                const processedResult = profile_detail.map(profile => ({
+                    user_id: profile.user_id,
+                    first_name: profile.first_name,
+                    last_name: profile.last_name,
+                    contact: profile.contact,
+                    address: profile.address,
+                    profile_image: profile.profile_image,
+                    user_type: profile.Register.user_type // Access user_type from the Register object
+                }));
+                output = processedResult;
             } else {
                 // For non-admin users, return unauthorized error
                 return res.status(403).json({ error: "Unauthorized access." });
@@ -84,15 +95,17 @@ router.put("/", async (req, res) => {
         const { session_user } = req;
         console.log(session_user);
         // Retrieve the updated user data from the request body
-        const {first_name, last_name, contact, address, profile_image } = req.body;
+        const {user_id, first_name, last_name, contact, address, profile_image } = req.body;
         const existingUser = await Register.findOne({ where: {email : session_user.email} });
         let updating_user;
         // Check if the session user is an admin
         if (existingUser.user_type !== "admin") {
              // Find the user in the Register model by their ID
-            updating_user = existingUser;
+            updating_user = await Profile.findOne({ where: { user_id: existingUser.id } });
+        }else{
+            updating_user = await Profile.findOne({ where: { user_id: user_id } });
         }
-        updating_user = await Profile.findOne({ where: { user_id: existingUser.id } });
+        
         // If the user doesn't exist, return an error
         if (!updating_user) {
             return res.status(404).json({ error: "User not found." });
