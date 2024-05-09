@@ -1,27 +1,56 @@
 const express = require('express');
 const router = express.Router();
 const { Register, AddFriend, Profile } = require("../models");
-const profile = require('../models/profile');
-
+const { Sequelize } = require('sequelize');
 
 // Route to get all pending friend requests received by a user
-router.get('/requests', async (req, res) => {
+router.get('/requests/:status', async (req, res) => {
     try {
         const { session_user } = req;
-
+        const { status } = req.params;
         // Retrieve the user data from the request session
         const existingUser = await Register.findOne({ where: { email: session_user.email } });
-        //const Profile = await Profile.findOne({where: {email: session_user.email}});
-
         // Find all pending friend requests where the user is the recipient
-        const friendRequests = await AddFriend.findAll({
+        // Get the IDs of users who are friends with the existingUser
+        const friendIds = await AddFriend.findAll({
+            attributes: ['requesterId', 'recipientId'],
             where: {
-                recipientId: existingUser.id,
-                status: 'pending'
+                [Sequelize.Op.or]: [
+                    { recipientId: existingUser.id }
+                ],
+                status: [status]
             }
-        });
+        }).then(friends => {
+            const ids = friends.map(friend => friend.requesterId === existingUser.id ? friend.recipientId : friend.requesterId);
+            return ids;
+        });                
 
-        res.status(200).json(friendRequests);
+        // User is an admin, get all profile data for users with user_type "normal" or "trainer"
+        profile_detail = await Profile.findAll({
+                    include: [{
+                        model: Register,
+                        as: 'user',
+                        where: {
+                        id: { [Sequelize.Op.in]: [friendIds] }
+                    },
+                        attributes: ['user_type']
+                    }],
+                    attributes: ['user_id', 'first_name', 'last_name', 'contact', 'address', 'profile_image']
+        });  
+
+        // Process the result to access user_type attribute
+        const processedResult = profile_detail.map(profile => ({
+            user_id: profile.user_id,
+            first_name: profile.first_name,
+            last_name: profile.last_name,
+            contact: profile.contact,
+            address: profile.address,
+            profile_image: profile.profile_image,
+            user_type: profile.user.user_type
+        }));
+        const output = processedResult;
+
+        res.status(200).json(output);
     } catch (error) {
         console.error('Error:', error);
         res.status(500).json({ error: 'An error occurred.' });

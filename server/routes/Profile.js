@@ -10,17 +10,30 @@ router.get("/", async (req, res) => {
     try {
         // Retrieve the session user data
         const { session_user } = req;
-        
+        console.log('work');
         const existingUser = await Register.findOne({ where: {email : session_user.email} });
-        let output;
-        // Check if the session user is an admin
-        if (existingUser.user_type === "admin" || existingUser.user_type === "normal" || existingUser.user_type === "trainer") {
-            output = await Profile.findOne({ where: { user_id: existingUser.id } });
-            
-        }else{
-            return res.status(403).json({ error: "Unauthorized access." });
-        }
-
+        let output = await Profile.findOne({ where: { user_id: existingUser.id } });
+        if (existingUser.user_type === "admin"){
+            output = await Profile.findAll({
+                include: [{
+                    model: Register,
+                    as: 'user',
+                    where: { user_type: ["normal", "trainer"]
+                },
+                    attributes: ['user_type']
+                }],
+                attributes: ['user_id', 'first_name', 'last_name', 'contact', 'address', 'profile_image']
+            }); 
+            output = output.map(profile => ({
+                user_id: profile.user_id,
+                first_name: profile.first_name,
+                last_name: profile.last_name,
+                contact: profile.contact,
+                address: profile.address,
+                profile_image: profile.profile_image,
+                user_type: profile.user.user_type  
+            }));
+        };
         res.status(200).json(output);
     } catch (error) {
         console.error("Error for getting user profile data:", error);
@@ -33,7 +46,7 @@ router.get("/allusers", async (req, res) => {
         try {
             // Retrieve the session user data
             const { session_user } = req;
-            
+            // Retrieve the user ID from the request parameters
             const existingUser = await Register.findOne({ where: {email : session_user.email} });
             let output;
             // Check if the session user is an admin
@@ -47,7 +60,7 @@ router.get("/allusers", async (req, res) => {
                             { requesterId: existingUser.id },
                             { recipientId: existingUser.id }
                         ],
-                        status: 'accepted'
+                        status: ['accepted','pending']
                     }
                 }).then(friends => {
                     const ids = friends.map(friend => friend.requesterId === existingUser.id ? friend.recipientId : friend.requesterId);
@@ -58,8 +71,9 @@ router.get("/allusers", async (req, res) => {
                 profile_detail = await Profile.findAll({
                             include: [{
                                 model: Register,
+                                as: 'user',
                                 where: { user_type: ["normal", "trainer"],
-                                id: { [Sequelize.Op.notIn]: [friendIds, existingUser.id] }
+                                id: { [Sequelize.Op.notIn]: [friendIds] }
                             },
                                 attributes: ['user_type']
                             }],
@@ -74,7 +88,7 @@ router.get("/allusers", async (req, res) => {
                     contact: profile.contact,
                     address: profile.address,
                     profile_image: profile.profile_image,
-                    user_type: profile.Register.user_type // Access user_type from the Register object
+                    user_type: profile.user.user_type // Access user_type from the Register object
                 }));
                 output = processedResult;
             } else {
@@ -93,7 +107,6 @@ router.put("/", async (req, res) => {
     try {
         // Retrieve the session user data
         const { session_user } = req;
-        console.log(session_user);
         // Retrieve the updated user data from the request body
         const {user_id, first_name, last_name, contact, address, profile_image } = req.body;
         const existingUser = await Register.findOne({ where: {email : session_user.email} });

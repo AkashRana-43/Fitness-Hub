@@ -105,5 +105,46 @@ router.put("/update", async (req, res) => {
         res.status(500).json({ error: "An error occurred while updating user data." });
     }
 });
-module.exports = router;
 
+// Define the delete users
+router.delete("/:user_id", async (req, res) => {
+    try {
+        // Retrieve the session user data
+        const { session_user } = req;
+
+        // Find the session user in the database
+        const existingUser = await Register.findOne({ where: { email: session_user.email } });
+
+        // Check if the session user is an admin
+        if (existingUser.user_type !== "admin") {
+            return res.status(403).json({ error: "Only admins can delete user/profile." });
+        }
+
+        // Retrieve the user ID from the request parameters
+        const { user_id } = req.params;
+        console.log( user_id);
+
+        // Find the profile to delete
+        const profileToDelete = await Profile.findOne({ where: { user_id: user_id } });
+        console.log("Profile to delete:", profileToDelete);
+
+        // If the profile doesn't exist, return an error
+        if (!profileToDelete) {
+            return res.status(404).json({ error: "Profile/User not found." });
+        }
+
+        // Delete the profile
+        await profileToDelete.destroy();
+
+        // Delete the corresponding user
+        const userToDelete = await Register.findOne({ where: { id: user_id } });
+        await userToDelete.destroy();
+
+        // Respond with success message
+        res.json({ message: "User deleted successfully." });
+    } catch (error) {
+        console.error("Error deleting user:", error);
+        res.status(500).json({ error: "An error occurred while deleting user." });
+    }
+});
+module.exports = router;
