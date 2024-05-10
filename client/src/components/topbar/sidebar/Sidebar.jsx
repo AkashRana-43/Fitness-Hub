@@ -56,10 +56,13 @@ export default function Sidebar() {
             <div className="sidebarMenu">
                 <h3 className="sidebarTitle">Notifications</h3>
                 <ul className="sidebarList">
-                    <li className="sidebarListItem">
-                        <Email className="sidebarIcon"/>
-                        Mail
-                    </li>
+                    <Link to="/bulkMail" className="link">
+                        <li className="sidebarListItem">
+                            <Email className="sidebarIcon"/>
+                            Mail
+                        </li>
+                    </Link>
+                    
                     <li className="sidebarListItem">
                         <Feedback className="sidebarIcon"/>
                         Feedback

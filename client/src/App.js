@@ -10,6 +10,7 @@ import {
 import UserList from "./components/pages/userList/UserList";
 import User from "./components/pages/user/User";
 import NewUser from "./components/pages/newUser/NewUser";
+import BulkMail from "./components/pages/bulkMail/BulkMail";
 
 function App() {
   return (
@@ -24,6 +25,7 @@ function App() {
           {/* Route for rendering the User component with a dynamic userId parameter */}
           <Route path="/user/:userId" element={<User />}/> 
           <Route path="/newUser" element={<NewUser/>}/>
+          <Route path="/bulkMail" element={<BulkMail/>}/>
         </Routes>
         
         

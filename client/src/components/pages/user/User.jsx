@@ -1,15 +1,66 @@
 import "./user.css";
-import { Link } from 'react-router-dom';
+// import axios from 'axios';
+import { Link, useParams } from 'react-router-dom';
+import { useState } from 'react';
 import {CalendarToday, LocationSearching, MailLockOutlined, PermIdentity, PhoneAndroid, Publish} from '@mui/icons-material';
 export default function User() {
+    const [firstName, setFirstName] = useState('');
+    const [lastName, setLastName] = useState('');
+    const [phone, setPhone] = useState('');
+    const [address, setAddress] = useState('');
+    const sessionId = localStorage.getItem('sessionID'); // Get the sessionId from localStorage
+    console.log(sessionId);
+
+    const {userId} = useParams();
+    console.log(userId);
+    /*useEffect(() => {
+        
+        fetch('http://localhost:3001/profile/', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'session': sessionId // Pass the sessionId in the header
+            }
+        })
+        .then(res => res.json()) // Convert the response to JSON
+        .then(data => console.log(data)) // Log the data
+        .catch(err => console.log(err));
+    }, []); */
+
+    const handleUpdate = (e) => {
+        e.preventDefault();
+    
+        // Construct the updated user data object
+        const updatedUserData = {
+            user_id: userId,
+            first_name: firstName,
+            last_name: lastName,
+            phone: phone,
+            address: address
+        };
+    
+        // Send a PUT request to update the user data
+        fetch('http://localhost:3001/profile/', {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'session': sessionId // Pass the sessionId in the header
+            },
+            body: JSON.stringify(updatedUserData)
+        })
+        .then(res => res.json())
+        .then(data => {
+            console.log(data); // Log the response data
+            // Optionally, you can update the form fields or show a success message
+        })
+        .catch(err => console.log(err));
+    };
+    
+    
   return (
     <div className="user">
-        <div className="userTitleContainer">
+        <div>
             <h1 className="userTitle">Edit User</h1>
-            <Link to="/newUser">
-                <button className="userAddButton">Create</button>
-            </Link>
-            
         </div>
         <div className="userContainer">
             <div className="userShow">
@@ -48,27 +99,27 @@ export default function User() {
             </div>
             <div className="userUpdate">
                 <span className="userUpdateTitle">Edit</span>
-                <form action="" className="userUpdateForm">
+                <form action="" className="userUpdateForm" onSubmit={handleUpdate}>
                     <div className="userUpdateLeft">
                         <div className="userUpdateItem">
-                            <label>Username</label>
-                            <input type="text" placeholder="robert99" className="userUpdateInput" />
+                            <label>First Name</label>
+                            <input type="text" value={firstName} onChange={(e) => setFirstName(e.target.value)} placeholder="robert99" className="userUpdateInput" />
                         </div>
                         <div className="userUpdateItem">
-                            <label>Full Name</label>
-                            <input type="text" placeholder="Robert Kiyosaki" className="userUpdateInput" />
+                            <label>Last Name</label>
+                            <input type="text" value={lastName} onChange={(e) => setLastName(e.target.value)} placeholder="Kiyosaki" className="userUpdateInput" />
                         </div>
-                        <div className="userUpdateItem">
+                        {/* <div className="userUpdateItem">
                             <label>Email</label>
                             <input type="text" placeholder="robert99@gmail.com" className="userUpdateInput" />
-                        </div>
+                        </div> */}
                         <div className="userUpdateItem">
                             <label>Phone</label>
-                            <input type="text" placeholder="0406687956" className="userUpdateInput" />
+                            <input type="text" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="0406687956" className="userUpdateInput" />
                         </div>
                         <div className="userUpdateItem">
                             <label>Address</label>
-                            <input type="text" placeholder="Keswick, Adelaide" className="userUpdateInput" />
+                            <input type="text" value={address} onChange={(e) => setAddress(e.target.value)} placeholder="Keswick, Adelaide" className="userUpdateInput" />
                         </div>
                     </div>
                     <div className="userUpdateRight">
