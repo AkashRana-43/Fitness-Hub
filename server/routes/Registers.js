@@ -28,7 +28,6 @@ router.get("/recieve", async(req, res) => {
 });
 
 router.post("/", async (req, res) => {
-    console.log("Received POST request");
     try {
         const { first_name, last_name, email, password, user_type } = req.body;
 
@@ -71,7 +70,7 @@ router.put("/update", async (req, res) => {
     try {
         // Retrieve the session user data
         const { session_user } = req;
-        console.log(session_user);
+
         const existingUser = await Register.findOne({ where: {email : session_user.email} });
         // Check if the session user is an admin
         if (existingUser.user_type !== "admin") {

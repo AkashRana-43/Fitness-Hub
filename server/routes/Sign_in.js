@@ -32,7 +32,7 @@ router.get('/', async (req, res) => {
         }
 
         res.redirect('http://localhost:3000/login');
-        
+
     } catch (error) {
         console.error('Error:', error);
         res.status(500).json({ error: 'An error occurred during verification.' });
@@ -65,6 +65,12 @@ router.post("/", async (req, res) => {
             });
         }
 
+        // Check if the user is blocked
+        if (existingUser.is_blocked) {
+            return res.status(403).json({ 
+                error: "Your account is blocked. Please contact the administrator to unblock your account."
+            });
+        }
 
         // Compare the provided password with the hashed password stored in the database
         const passwordMatch = await bcrypt.compare(password, existingUser.password);
@@ -76,7 +82,6 @@ router.post("/", async (req, res) => {
         console.log("User found successfully");
         // Store user information in the session
         const { id, user_type } = existingUser;
-            console.log("Session created");
             const now = new Date();
 
             // Add 15 minutes to the current date and time
