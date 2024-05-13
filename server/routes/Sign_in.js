@@ -94,7 +94,7 @@ router.post("/", async (req, res) => {
                 expiry: after15Minutes, // Save session expiry time
             });
             const profile = await Profile.findOne({ where: { user_id: existingUser.id } });
-            res.status(200).json( {id: existingUser.id, email: email, session: create_session, first_name: profile.first_name,  profile_image: profile.profile_image});
+            res.status(200).json( {id: existingUser.id, user_type: existingUser.user_type, email: email, session: create_session, first_name: profile.first_name,  profile_image: profile.profile_image});
         // }
     } catch (error) {
         console.error("Error:", error);
