@@ -1,4 +1,5 @@
 const express = require('express');
+const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const session = require('express-session');
 const app = express();
@@ -19,6 +20,7 @@ const router = express.Router();
 
 app.use(cookieParser());
 app.use(express.json());
+app.use(cors());
 
 const db = require("./models");
 
@@ -32,7 +34,10 @@ const profileRouter = require("./routes/Profile");
 const logoutRouter = require("./routes/Sign_out");
 const addfriendRouter = require("./routes/Add_friends");
 const bulkMessageRouter = require("./routes/Bulk_message");
+<<<<<<< HEAD
 const dietRouter = require("./routes/Diet");
+=======
+>>>>>>> 13568df9ef55d95dca1a5ecad773051533eb2cf0
 
 
 app.use("/register", registerRouter);
@@ -44,7 +49,10 @@ app.use("/logout", checkSessionExpiration, logoutRouter);
 app.use("/add_friend", checkSessionExpiration, addfriendRouter);
 app.use("/verify",loginRouter);
 app.use("/bulk_email",checkSessionExpiration, bulkMessageRouter);
+<<<<<<< HEAD
 app.use("/diet",checkSessionExpiration, dietRouter);
+=======
+>>>>>>> 13568df9ef55d95dca1a5ecad773051533eb2cf0
 
 
  db.sequelize.sync().then(() =>{
