@@ -6,7 +6,7 @@ const router = express.Router();
 const bcrypt = require('bcrypt');
 const session = require('express-session');
 const { Register, Login, Profile } = require("../models");
-const { sendToken } = require('./mail');
+const { sendToken } = require('./Mail');
 
 
 // Route to handle user verification
