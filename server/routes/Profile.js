@@ -5,6 +5,20 @@ const {Register, Profile, AddFriend } = require("../models");
 const { Sequelize } = require('sequelize');
 const profile = require('../models/profile');
 
+const multer = require('multer');
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, 'uploads/');
+    },
+    filename: function (req, file, cb) {
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+        cb(null, file.fieldname + '-' + uniqueSuffix + '.' + file.mimetype.split('/')[1]);
+    }
+});
+const upload = multer({ storage: storage });
+
+
+
 router.get("/", async (req, res) => {
     // Access session_id from the req object
     try {
@@ -103,12 +117,14 @@ router.get("/allusers", async (req, res) => {
         }
 });
 
-router.put("/", async (req, res) => {
+router.put("/", upload.single('profile_image'),async (req, res) => {
     try {
         // Retrieve the session user data
         const { session_user } = req;
         // Retrieve the updated user data from the request body
-        const {user_id, first_name, last_name, contact, address, profile_image } = req.body;
+        const {user_id, first_name, last_name, contact, address} = req.body;
+        const profile_image = req.file.path; // This now contains the path of the uploaded file
+        console.log(profile_image);
         const existingUser = await Register.findOne({ where: {email : session_user.email} });
         let updating_user;
         // Check if the session user is an admin
@@ -123,7 +139,6 @@ router.put("/", async (req, res) => {
         if (!updating_user) {
             return res.status(404).json({ error: "User not found." });
         }
-
         // Update the user profile data
         updating_user.first_name = first_name;
         updating_user.last_name = last_name;

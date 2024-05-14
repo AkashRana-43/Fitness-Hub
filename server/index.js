@@ -34,7 +34,7 @@ app.use("/add_friend", checkSessionExpiration, addfriendRouter);
 app.use("/verify",loginRouter);
 app.use("/bulk_email",checkSessionExpiration, bulkMessageRouter);
 app.use("/diet",checkSessionExpiration, dietRouter);
-
+app.use('/uploads', express.static('uploads'));
 
  db.sequelize.sync().then(() =>{
    app.listen(3001, () => {
