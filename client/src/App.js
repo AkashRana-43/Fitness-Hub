@@ -46,7 +46,7 @@ function App() {
           
               <Sidebar/>
               <Routes>
-              
+
                 <Route path="/admin" element={<AdminHome />} />
                 <Route path="/users" element={<UserList />} />
                 <Route path="/user/:userId" element={<User />} />
