@@ -1,4 +1,5 @@
 const express = require('express');
+const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const session = require('express-session');
 const app = express();
@@ -19,6 +20,7 @@ const router = express.Router();
 
 app.use(cookieParser());
 app.use(express.json());
+app.use(cors());
 
 const db = require("./models");
 
