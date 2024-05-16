@@ -5,6 +5,7 @@ const session = require('express-session');
 const app = express();
 const { Login } = require("./models");
 const router = express.Router();
+<<<<<<< HEAD
 // const path = require('path');
 
 // const multer = require('multer');
@@ -17,6 +18,9 @@ const router = express.Router();
 //     cb(null, Date.now() + path.extname(file.originalname))
 //   }
 // });
+=======
+
+>>>>>>> 7c848fd6c698c6474636f9eb14a2c90691f8cfc9
 
 app.use(cookieParser());
 app.use(express.json());
@@ -35,9 +39,12 @@ const logoutRouter = require("./routes/Sign_out");
 const addfriendRouter = require("./routes/Add_friends");
 const bulkMessageRouter = require("./routes/Bulk_message");
 <<<<<<< HEAD
+<<<<<<< HEAD
 const dietRouter = require("./routes/Diet");
 =======
 >>>>>>> 13568df9ef55d95dca1a5ecad773051533eb2cf0
+=======
+>>>>>>> 7c848fd6c698c6474636f9eb14a2c90691f8cfc9
 
 
 app.use("/register", registerRouter);
@@ -50,9 +57,12 @@ app.use("/add_friend", checkSessionExpiration, addfriendRouter);
 app.use("/verify",loginRouter);
 app.use("/bulk_email",checkSessionExpiration, bulkMessageRouter);
 <<<<<<< HEAD
+<<<<<<< HEAD
 app.use("/diet",checkSessionExpiration, dietRouter);
 =======
 >>>>>>> 13568df9ef55d95dca1a5ecad773051533eb2cf0
+=======
+>>>>>>> 7c848fd6c698c6474636f9eb14a2c90691f8cfc9
 
 
  db.sequelize.sync().then(() =>{

@@ -10,6 +10,7 @@ router.get("/", async (req, res) => {
     try {
         // Retrieve the session user data
         const { session_user } = req;
+<<<<<<< HEAD
         console.log('work');
         const existingUser = await Register.findOne({ where: {email : session_user.email} });
 <<<<<<< HEAD
@@ -36,6 +37,10 @@ router.get("/", async (req, res) => {
             }));
         };
 =======
+=======
+        
+        const existingUser = await Register.findOne({ where: {email : session_user.email} });
+>>>>>>> 7c848fd6c698c6474636f9eb14a2c90691f8cfc9
         let output;
         // Check if the session user is an admin
         if (existingUser.user_type === "admin" || existingUser.user_type === "user" || existingUser.user_type === "trainer") {
@@ -45,7 +50,10 @@ router.get("/", async (req, res) => {
             return res.status(403).json({ error: "Unauthorized access." });
         }
 
+<<<<<<< HEAD
 >>>>>>> 13568df9ef55d95dca1a5ecad773051533eb2cf0
+=======
+>>>>>>> 7c848fd6c698c6474636f9eb14a2c90691f8cfc9
         res.status(200).json(output);
     } catch (error) {
         console.error("Error for getting user profile data:", error);
@@ -59,10 +67,14 @@ router.get("/allusers", async (req, res) => {
             // Retrieve the session user data
             const { session_user } = req;
 <<<<<<< HEAD
+<<<<<<< HEAD
             // Retrieve the user ID from the request parameters
 =======
             
 >>>>>>> 13568df9ef55d95dca1a5ecad773051533eb2cf0
+=======
+            
+>>>>>>> 7c848fd6c698c6474636f9eb14a2c90691f8cfc9
             const existingUser = await Register.findOne({ where: {email : session_user.email} });
             let output;
             // Check if the session user is an admin
@@ -77,10 +89,14 @@ router.get("/allusers", async (req, res) => {
                             { recipientId: existingUser.id }
                         ],
 <<<<<<< HEAD
+<<<<<<< HEAD
                         status: ['accepted','pending']
 =======
                         status: 'accepted'
 >>>>>>> 13568df9ef55d95dca1a5ecad773051533eb2cf0
+=======
+                        status: 'accepted'
+>>>>>>> 7c848fd6c698c6474636f9eb14a2c90691f8cfc9
                     }
                 }).then(friends => {
                     const ids = friends.map(friend => friend.requesterId === existingUser.id ? friend.recipientId : friend.requesterId);
@@ -92,6 +108,7 @@ router.get("/allusers", async (req, res) => {
                             include: [{
                                 model: Register,
 <<<<<<< HEAD
+<<<<<<< HEAD
                                 as: 'user',
                                 where: { user_type: ["normal", "trainer"],
                                 id: { [Sequelize.Op.notIn]: [friendIds] }
@@ -99,6 +116,10 @@ router.get("/allusers", async (req, res) => {
                                 where: { user_type: ["normal", "trainer"],
                                 id: { [Sequelize.Op.notIn]: [friendIds, existingUser.id] }
 >>>>>>> 13568df9ef55d95dca1a5ecad773051533eb2cf0
+=======
+                                where: { user_type: ["normal", "trainer"],
+                                id: { [Sequelize.Op.notIn]: [friendIds, existingUser.id] }
+>>>>>>> 7c848fd6c698c6474636f9eb14a2c90691f8cfc9
                             },
                                 attributes: ['user_type']
                             }],
@@ -114,10 +135,14 @@ router.get("/allusers", async (req, res) => {
                     address: profile.address,
                     profile_image: profile.profile_image,
 <<<<<<< HEAD
+<<<<<<< HEAD
                     user_type: profile.user.user_type // Access user_type from the Register object
 =======
                     user_type: profile.Register.user_type // Access user_type from the Register object
 >>>>>>> 13568df9ef55d95dca1a5ecad773051533eb2cf0
+=======
+                    user_type: profile.Register.user_type // Access user_type from the Register object
+>>>>>>> 7c848fd6c698c6474636f9eb14a2c90691f8cfc9
                 }));
                 output = processedResult;
             } else {
@@ -136,6 +161,10 @@ router.put("/", async (req, res) => {
     try {
         // Retrieve the session user data
         const { session_user } = req;
+<<<<<<< HEAD
+=======
+        console.log(session_user);
+>>>>>>> 7c848fd6c698c6474636f9eb14a2c90691f8cfc9
         // Retrieve the updated user data from the request body
         const {user_id, first_name, last_name, contact, address, profile_image } = req.body;
         const existingUser = await Register.findOne({ where: {email : session_user.email} });

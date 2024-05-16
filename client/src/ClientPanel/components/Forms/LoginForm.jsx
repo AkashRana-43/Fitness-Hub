@@ -20,12 +20,20 @@ const LoginForm = ({handleLogin}) => {
                 email,
                 password
             });
-            console.log(response.data);
+           
             if (response.status === 200) {
-                const { session } = response.data;
+                const { session, user_type } = response.data;
+                
                 sessionStorage.setItem('session', session);
+                localStorage.setItem('user_type', user_type);
+                
                 updateUser(response.data);
-                navigate('/')
+               
+                if (user_type === 'admin') {
+                    navigate('/admin');
+                } else {
+                    navigate('/');
+                }
                 handleLogin(); 
 
             } else {
