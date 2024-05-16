@@ -25,7 +25,7 @@ export default function BulkMail() {
             message: message
         };
 
-        const sessionId = localStorage.getItem('sessionID');
+        const sessionId = sessionStorage.getItem('session');
         // Determine the category based on the selection
         const category = e.target.elements.category.value;
         
