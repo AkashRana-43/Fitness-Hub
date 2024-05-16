@@ -31,11 +31,7 @@ module.exports = (sequelize, DataTypes) => {
     });
     // Define associations if needed
     Profile.associate = (models) => {
-<<<<<<< HEAD
          Profile.belongsTo(models.Register, { foreignKey: 'user_id', as: 'user'});
-=======
-         Profile.belongsTo(models.Register, { foreignKey: 'user_id' });
->>>>>>> 13568df9ef55d95dca1a5ecad773051533eb2cf0
      };
 
     return Profile;

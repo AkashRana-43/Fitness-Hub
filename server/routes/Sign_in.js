@@ -1,16 +1,13 @@
 
 
-<<<<<<< HEAD
 
-=======
->>>>>>> 7c848fd6c698c6474636f9eb14a2c90691f8cfc9
 const express = require('express');
 const cookieParser = require('cookie-parser');
 const router = express.Router();
 const bcrypt = require('bcrypt');
 const session = require('express-session');
 const { Register, Login, Profile } = require("../models");
-const { sendToken } = require('./Mail');
+const { sendToken } = require('./mail');
 
 
 // Route to handle user verification

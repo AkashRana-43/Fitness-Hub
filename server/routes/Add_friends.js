@@ -1,8 +1,6 @@
 const express = require('express');
 const router = express.Router();
 const { Register, AddFriend, Profile } = require("../models");
-<<<<<<< HEAD
-<<<<<<< HEAD
 const { Sequelize } = require('sequelize');
 
 // Route to get all pending friend requests received by a user
@@ -53,34 +51,6 @@ router.get('/requests/:status', async (req, res) => {
         const output = processedResult;
 
         res.status(200).json(output);
-=======
-=======
->>>>>>> 7c848fd6c698c6474636f9eb14a2c90691f8cfc9
-const profile = require('../models/profile');
-
-
-// Route to get all pending friend requests received by a user
-router.get('/requests', async (req, res) => {
-    try {
-        const { session_user } = req;
-
-        // Retrieve the user data from the request session
-        const existingUser = await Register.findOne({ where: { email: session_user.email } });
-        //const Profile = await Profile.findOne({where: {email: session_user.email}});
-
-        // Find all pending friend requests where the user is the recipient
-        const friendRequests = await AddFriend.findAll({
-            where: {
-                recipientId: existingUser.id,
-                status: 'pending'
-            }
-        });
-
-        res.status(200).json(friendRequests);
-<<<<<<< HEAD
->>>>>>> 13568df9ef55d95dca1a5ecad773051533eb2cf0
-=======
->>>>>>> 7c848fd6c698c6474636f9eb14a2c90691f8cfc9
     } catch (error) {
         console.error('Error:', error);
         res.status(500).json({ error: 'An error occurred.' });
