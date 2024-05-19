@@ -5,18 +5,6 @@ const session = require('express-session');
 const app = express();
 const { Login } = require("./models");
 const router = express.Router();
-// const path = require('path');
-
-// const multer = require('multer');
-// const storage = multer.diskStorage({
-//   destination:(req, file, cb) => {
-//     cb(null, 'image')
-//   },
-//   filename: (req, file, cb) =>{
-//     console.log(file)
-//     cb(null, Date.now() + path.extname(file.originalname))
-//   }
-// });
 
 app.use(cookieParser());
 app.use(express.json());
@@ -65,6 +53,7 @@ async function checkSessionExpiration(req, res, next) {
       where: { session_id: session_id},
       // attributes: ['id', 'expiry']
     });
+    console.log(session_id);
     if (!sessionExpiry) {
       // Session not found in the database, consider it expired
       req.session.destroy();

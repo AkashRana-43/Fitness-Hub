@@ -11,6 +11,7 @@ export default function Topbar() {
 
     const logoutAndNavigateHome = async () => {
         handleLogout(); // Logout user
+        
         navigate('/'); // Navigate to home directory
       };
   return (
