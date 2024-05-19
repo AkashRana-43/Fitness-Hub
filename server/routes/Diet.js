@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const { Diet, Register, DietAssignment } = require('../models'); // Import the Diet and Register models
+const { Profile, Diet, Register, DietAssignment } = require('../models'); // Import the Diet and Register models
+const { sendEmail } = require('./mail');
 
 router.get('/', async (req, res) => {
     try {
@@ -190,6 +191,44 @@ router.post('/assign_diets', async (req, res) => {
         await DietAssignment.bulkCreate(assignments, {
             ignoreDuplicates: true // This prevents re-assigning the same diet to the same user
         });
+
+        // Email content construction and sending
+        const user = await Register.findByPk(userId);
+        const userEmail = user.email;
+        const trainerProfile = await Profile.findOne({
+            where: { user_id: trainer.id }
+        });
+        const userProfile = await Profile.findOne({
+            where: { user_id: userId}
+        });
+        
+        if (!trainerProfile || !userProfile) {
+            return res.status(404).json({ error: 'Profile not found' });
+        }
+        const dietDetails = diets.map(diet => `
+        <li>
+          <strong>Title:</strong> ${diet.title}<br>
+          <strong>Meal Name:</strong> ${diet.meal_name}<br>
+          <strong>Meal Type:</strong> ${diet.meal_type}<br>
+          <strong>Description:</strong> ${diet.description}<br>
+          <strong>Calories:</strong> ${diet.calories} kcal<br>
+          <strong>Protein:</strong> ${diet.protein} g<br>
+          <strong>Carbohydrates:</strong> ${diet.carbohydrates} g<br>
+          <strong>Fat:</strong> ${diet.fat} g<br>
+          <strong>Fiber:</strong> ${diet.fiber} g
+        </li><br>
+      `).join('');
+
+        const emailContent = `
+        <h1>Diet Plan Assigned</h1>
+        <p>Dear ${userProfile.first_name},</p>
+        <p>You have been assigned a new diet plan by your trainer (${trainerProfile.first_name}), which you requested to him. Here are the details of your breakfast:</p>
+        <ul>${dietDetails}</ul>
+        <p>Best regards,</p>
+        <p>${trainerProfile.first_name}</p>
+      `;
+        await sendEmail(userEmail, 'Your Diet Plan', emailContent);
+
 
         res.status(200).json({ message: 'Diets successfully assigned to user' });
     } catch (error) {

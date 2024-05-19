@@ -24,7 +24,6 @@ router.get("/", async (req, res) => {
     try {
         // Retrieve the session user data
         const { session_user } = req;
-        console.log('work');
         const existingUser = await Register.findOne({ where: {email : session_user.email} });
         let output = await Profile.findOne({ where: { user_id: existingUser.id } });
         if (existingUser.user_type === "admin"){
@@ -54,6 +53,34 @@ router.get("/", async (req, res) => {
         res.status(500).json({ error: "An error occurred while getting user profile data." });
     }
 });
+
+
+router.get("/:userId", async (req, res) => {
+    const { userId } = req.params;
+    const { session_user } = req; // This assumes you are storing logged-in user's info in session_user
+
+    try {
+        const userProfile = await Profile.findOne({
+            where: { user_id: userId },
+            include: [{
+                model: Register,
+                as: 'user',
+                attributes: ['user_type']
+            }]
+        });
+
+        if (!userProfile) {
+            return res.status(404).json({ error: "Profile not found." });
+        }
+
+        res.status(200).json(userProfile);
+    } catch (error) {
+        console.error("Error fetching user profile:", error);
+        res.status(500).json({ error: "An error occurred while fetching user profile data." });
+    }
+});
+
+
 
 router.get("/allusers", async (req, res) => {
         // Access sesssion_id from the req object
