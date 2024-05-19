@@ -8,7 +8,7 @@ export default function User() {
     const [lastName, setLastName] = useState('');
     const [phone, setPhone] = useState('');
     const [address, setAddress] = useState('');
-    const sessionId = localStorage.getItem('sessionID'); // Get the sessionId from localStorage
+    const sessionId = sessionStorage.getItem('session'); // Get the sessionId from localStorage
     console.log(sessionId);
 
     const {userId} = useParams();

@@ -11,27 +11,29 @@ export default function UserList() {
     const [data, setData] = useState([]);
     const [selectedRole, setSelectedRole] = useState('');
     const [filteredData, setFilteredData] = useState([]);
+    const sessionId = sessionStorage.getItem('session');
+    console.log(sessionId);
     
-    useEffect(() => {
-      // Login as admin to get session ID
-      fetch('http://localhost:3001/login', {
-          method: 'POST',
-          headers: {
-              'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-              email: 'rohit@gmail.com',
-              password: 'password123',
-          }),
-      })
-      .then(response => response.json())
-      .then(data => {
-          // Store the session ID in localStorage
-          localStorage.setItem('sessionID', data.session);
-
+     useEffect(() => {
+    //   // Login as admin to get session ID
+    //   fetch('http://localhost:3001/login', {
+    //       method: 'POST',
+    //       headers: {
+    //           'Content-Type': 'application/json',
+    //       },
+    //       body: JSON.stringify({
+    //           email: 'rohit@gmail.com',
+    //           password: 'password123',
+    //       }),
+    //   })
+    //   .then(response => response.json())
+    //   .then(data => {
+    //       // Store the session ID in localStorage
+    //       localStorage.setItem('sessionID', data.session);
+    
           
           
-          fetch('http://localhost:3001/profile/allusers', {
+          fetch('http://localhost:3001/profile/', {
               method: 'GET',
               headers: {
                 'session': `${sessionId}`,
@@ -50,13 +52,12 @@ export default function UserList() {
           })
           .catch(error => console.error('Error fetching users:', error));
             
-      })
-      .catch(error => console.error('Error logging in:', error));
+    //   })
+    //   .catch(error => console.error('Error logging in:', error));
       
   }, []);
 
-  const sessionId = localStorage.getItem('sessionID');
-  console.log(sessionId);  
+  
 
   const handleRoleChange = (event) => {
     console.log(event.target.value);

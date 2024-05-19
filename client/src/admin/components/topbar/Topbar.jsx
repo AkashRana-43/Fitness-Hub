@@ -9,8 +9,9 @@ export default function Topbar() {
     const navigate = useNavigate(); // Initialize useNavigate hook
     const { handleLogout } = useAuth();
 
-    const logoutAndNavigateHome = () => {
+    const logoutAndNavigateHome = async () => {
         handleLogout(); // Logout user
+        
         navigate('/'); // Navigate to home directory
       };
   return (

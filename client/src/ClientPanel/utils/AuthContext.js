@@ -8,7 +8,7 @@ export const AuthProvider = ({ children }) => {
   
 
   useEffect(() => {
-    const session = localStorage.getItem('session');
+    const session = sessionStorage.getItem('session');
     const userType = localStorage.getItem('user_type'); // Get user_type from localStorage
     if (session) {
       
@@ -32,7 +32,8 @@ export const AuthProvider = ({ children }) => {
 
   const handleLogout = () => {
     setIsLoggedIn(false);
-    localStorage.removeItem('session');
+    setIsAdmin(false);
+    sessionStorage.removeItem('session');
     localStorage.removeItem('user_type');
   };
 
