@@ -33,25 +33,7 @@ function App() {
   if (isAdmin) {
     return (
       <BrowserRouter>
-<<<<<<< HEAD
-       
-      
-       <Topbar/>
-            <div className="adminContainer">
-              
-          
-              <Sidebar/>
-              <Routes>
 
-                <Route path="/admin" element={<AdminHome />} />
-                <Route path="/users" element={<UserList />} />
-                <Route path="/user/:userId" element={<User />} />
-                <Route path="/newUser" element={<NewUser />} />
-                <Route path="/bulkMail" element={<BulkMail />} />
-              </Routes>
-            </div>
-      </BrowserRouter>    
-=======
         <Topbar />
         <div className="adminContainer">
           <Sidebar />
@@ -64,7 +46,6 @@ function App() {
           </Routes>
         </div>
       </BrowserRouter>
->>>>>>> 27b769a (update)
     );
   } else {
     return (
