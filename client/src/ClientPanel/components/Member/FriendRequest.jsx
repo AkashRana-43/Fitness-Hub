@@ -53,7 +53,7 @@ const FriendRequest = () => {
                         <div className="d-sm-flex align-items-center justify-content-between mt-3 mb-4">
                             <h3 className="mb-3 mb-sm-0 fw-semibold d-flex align-items-center">Friend Request <span className="badge text-bg-secondary fs-2 rounded-4 py-1 px-2 ms-2">{requesters.length}</span></h3>
                             <form className="position-relative">
-                                <input type="text" className="form-control search-chat py-2 ps-5" id="text-srh" placeholder="Search Friends" />
+                                <input type="text" className="form-control search-chat py-2 ps-5" id="text-srh" placeholder="Search" />
                                 <i className="ti ti-search position-absolute top-50 start-0 translate-middle-y text-dark ms-3"></i>
                             </form>
                         </div>

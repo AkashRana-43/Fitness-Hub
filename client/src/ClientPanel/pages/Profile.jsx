@@ -19,7 +19,7 @@ const Profile = () => {
   return (
     <Layout showFooter = {false}>
       <ProfileHeader firstName={userData.first_name} userType={userData.user_type} activeTab={activeTab} onTabChange={handleTabChange}/>
-      {activeTab === "profile" ? <ProfileDescBody /> : <ProfileBody />}
+      {activeTab === "profile" ? <ProfileDescBody userType={userData.user_type} /> : <ProfileBody />}
     </Layout>
   )
 }

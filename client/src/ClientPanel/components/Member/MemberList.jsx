@@ -18,19 +18,19 @@ const MemberList = () => {
             }
         })
             .then(response => {
-                setUsers(response.data);
-                setFilteredUsers(response.data);
+                // console.log(response.data);
+                const usersWithRoles = response.data.map(user => ({
+                    ...user,
+                    role: user.user_type // Ensure role is derived from user_type
+                }));
+                setUsers(usersWithRoles);
+                setFilteredUsers(usersWithRoles);
             })
             .catch(error => {
                 console.error('Error fetching users:', error);
             });
 
-        // Retrieve addedFriends and pendingRequests from localStorage
-        // const storedAddedFriends = localStorage.getItem('addedFriends');
         const storedPendingRequests = localStorage.getItem('pendingRequests');
-        // if (storedAddedFriends) {
-        //     setAddedFriends(JSON.parse(storedAddedFriends));
-        // }
         if (storedPendingRequests) {
             setPendingRequests(JSON.parse(storedPendingRequests));
         }
@@ -66,8 +66,6 @@ const MemberList = () => {
             if (response.data.status === 'pending') {
                 setAddedFriends([...addedFriends, { recipientId: recipientId }]);
                 setPendingRequests([...pendingRequests, recipientId]);
-                // Store addedFriends and pendingRequests in localStorage
-                // localStorage.setItem('addedFriends', JSON.stringify([...addedFriends, { recipientId: recipientId }]));
                 localStorage.setItem('pendingRequests', JSON.stringify([...pendingRequests, recipientId]));
             } else {
                 console.log('Unexpected response status:', response.data.status);
@@ -77,16 +75,20 @@ const MemberList = () => {
         }
     };
 
+    const capitalizeFirstLetter = (string) => {
+        return string.charAt(0).toUpperCase() + string.slice(1);
+    };
+
     return (
         <section className='container'>
             <div className="tab-pane fade show active" id="pills-friends" role="tabpanel" aria-labelledby="pills-friends-tab" tabIndex="0">
                 <div className="d-sm-flex align-items-center justify-content-between mt-3 mb-4">
                     <h3 className="mb-3 mb-sm-0 fw-semibold d-flex align-items-center">Members <span className="badge text-bg-secondary fs-2 rounded-4 py-1 px-2 ms-2">{filteredUsers.length}</span></h3>
                     <div className="userDropdown">
-                        <select className="userDropdownicon" value={userType} onChange={(e) => setUserType(e.target.value)}>
+                        <select className="userDropdownicon" value={userType} onChange={(e) => setUserType(e.target.value)} style={{ backgroundColor: '#F5593D'}}>
                             <option value="All">All</option>
-                            <option value="Trainer">Trainer</option>
-                            <option value="Client">Client</option>
+                            <option value="trainer">Trainer</option>
+                            <option value="client">Client</option>
                         </select>
                     </div>
                     <form className="position-relative">
@@ -96,7 +98,7 @@ const MemberList = () => {
                 </div>
                 <div className="row">
                     {filteredUsers.map((user, index) => (
-                        <div className="col-sm-6 col-lg-3" key={index} style={{ paddingTop: '40px' }}>
+                        <div className="col-sm-6 col-lg-3" key={index} style={{ paddingTop: '40px', paddingBottom: '40px'}}>
                             <div className="card hover-img" style={{ height: '100%', position: 'relative' }}>
                                 <img src={Img1} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                                 <div className="card-content">
@@ -108,7 +110,7 @@ const MemberList = () => {
                                         </div>
                                     </div>
                                     <div className="px-2 bg-light list-unstyled d-flex align-items-center justify-content-center mb-0">
-                                        <span className="text-dark fs-2">{user.role}</span>
+                                        <span className="text-dark fs-2">{capitalizeFirstLetter(user.role)}</span>
                                     </div>
                                     <div className="px-2 py-2 bg-light list-unstyled d-flex align-items-center justify-content-center">
                                         <ul className="list-inline mb-0">
