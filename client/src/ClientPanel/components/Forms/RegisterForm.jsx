@@ -6,7 +6,7 @@ const RegisterForm = () => {
 
     const navigate = useNavigate();
 
-    const [userType, setUserType] = useState('Trainer');
+    const [userType, setUserType] = useState('trainer');
     const [formData, setFormData] = useState({
         first_name: '',
         last_name: '',
