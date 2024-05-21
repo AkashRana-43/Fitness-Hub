@@ -30,7 +30,7 @@ router.get('/', async (req, res) => {
             // If not an admin, fetch only the diet entries that belong to the user
             diets = await Diet.findAll({
                 where: { user_id: existingUser.id },
-                attributes: ['title', 'meal_name', 'meal_type', 'description', 'calories', 'protein', 'carbohydrates', 'fat', 'fiber']
+                attributes: ['id','title', 'meal_name', 'meal_type', 'description', 'calories', 'protein', 'carbohydrates', 'fat', 'fiber']
             });
         }
 
