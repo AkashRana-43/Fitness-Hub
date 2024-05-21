@@ -13,7 +13,7 @@ const FriendRequest = () => {
     const fetchFriendRequests = async () => {
         try {
             const session = sessionStorage.getItem('session');
-            const response = await axios.get('http://localhost:3001/add_friend/requests', {
+            const response = await axios.get('http://localhost:3001/add_friend/requests/pending', {
                 headers: {
                     'session': session,
                 }
@@ -27,6 +27,7 @@ const FriendRequest = () => {
 
     const handleDecision = async (requesterId, action) => {
         try {
+            console.log(requesterId, action);
             const session = sessionStorage.getItem('session');
             const response = await axios.put('http://localhost:3001/add_friend/request/decision', {
                 requesterId: requesterId,
@@ -81,10 +82,10 @@ const FriendRequest = () => {
                                         </div>
                                         <div className="col-md-6 col-sm-6"></div>
                                         <div className="col-md-1 col-sm-1">
-                                            <button className="btn btn-primary btn-sm" onClick={() => handleDecision(requester.requesterId, 'accept')}>Accept</button>
+                                            <button className="btn btn-primary btn-sm" onClick={() => handleDecision(requester.user_id, 'accept')}>Accept</button>
                                         </div>
                                         <div className="col-md-1 col-sm-1">
-                                            <button className="btn btn-danger btn-sm" onClick={() => handleDecision(requester.requesterId, 'reject')}>Reject</button>
+                                            <button className="btn btn-danger btn-sm" onClick={() => handleDecision(requester.user_id, 'reject')}>Reject</button>
                                         </div>
                                     </div>
                                 </div>

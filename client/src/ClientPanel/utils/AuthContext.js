@@ -5,26 +5,26 @@ const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
-  
+  const [userType, setUserType] = useState(null); // Add userType state
 
   useEffect(() => {
     const session = sessionStorage.getItem('session');
     const userType = localStorage.getItem('user_type'); // Get user_type from localStorage
     if (session) {
-      
       setIsLoggedIn(true);
-      
     }
-
-    if (userType === 'admin') {
-      setIsAdmin(true);
+    if (userType) {
+      setUserType(userType);
+      if (userType === 'admin') {
+        setIsAdmin(true);
+      }
     }
   }, []);
 
   const handleLogin = () => {
     setIsLoggedIn(true);
-    localStorage.setItem('session', 'your_session_token_or_identifier_here');
     const userType = localStorage.getItem('user_type');
+    setUserType(userType);
     if (userType === 'admin') {
       setIsAdmin(true);
     }
@@ -33,12 +33,13 @@ export const AuthProvider = ({ children }) => {
   const handleLogout = () => {
     setIsLoggedIn(false);
     setIsAdmin(false);
+    setUserType(null); // Clear userType
     sessionStorage.removeItem('session');
     localStorage.removeItem('user_type');
   };
 
   return (
-    <AuthContext.Provider value={{ isLoggedIn, isAdmin, handleLogin, handleLogout }}>
+    <AuthContext.Provider value={{ isLoggedIn, isAdmin, userType, handleLogin, handleLogout }}>
       {children}
     </AuthContext.Provider>
   );

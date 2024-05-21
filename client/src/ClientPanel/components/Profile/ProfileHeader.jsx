@@ -2,11 +2,9 @@ import React, { useState } from 'react';
 import './css/ProfilePage.css';
 import Img1 from '../../assets/img/bg/BG.jpg';
 import './css/ProfileEditForm.css';
+
 const ProfileHeader = ({ firstName, userType, activeTab, onTabChange, loginUserType }) => {
-
     const [showPopup, setShowPopup] = useState(false);
-
- 
 
     const togglePopup = () => {
         setShowPopup(!showPopup);
@@ -59,7 +57,6 @@ const ProfileHeader = ({ firstName, userType, activeTab, onTabChange, loginUserT
                     <div className="col-lg-4 order-last text-center">
                         <button className="btn mx-4" style={{ backgroundColor: "#F5593D", color: "white", border: 'none' }} onClick={togglePopup}>Edit Profile</button>
                     </div>
-
                 </div>
             </section>
             <div style={{ padding: '20px 40%' }}>
@@ -103,6 +100,18 @@ const ProfileHeader = ({ firstName, userType, activeTab, onTabChange, loginUserT
                         <form onSubmit={handleSubmit} style={{ padding: '20px', width: '100%', textAlign: 'center' }}>
                             <button type="button" className="close-button" onClick={closeForm}>&times;</button>
                             <div className="form-group">
+                                <label htmlFor="firstName">Firstname:</label>
+                                <input type="text" id="firstName" className="form-control" autoComplete="given-name" />
+                            </div>
+                            <div className="form-group">
+                                <label htmlFor="lastName">Lastname:</label>
+                                <input type="text" id="lastName" className="form-control" autoComplete="family-name" />
+                            </div>
+                            <div className="form-group">
+                                <label htmlFor="profileImage">Profile Image:</label>
+                                <input type="file" id="profileImage" className="form-control" />
+                            </div>
+                            <div className="form-group">
                                 <label htmlFor="currentHeight">Current Height:</label>
                                 <input type="text" id="currentHeight" className="form-control" />
                             </div>
@@ -131,7 +140,7 @@ const ProfileHeader = ({ firstName, userType, activeTab, onTabChange, loginUserT
                             </div>
                             <div className="form-group">
                                 <label htmlFor="address">Address:</label>
-                                <input type="text" id="goalWeight" className="form-control" />
+                                <input type="text" id="address" className="form-control" />
                             </div>
                             <div className="form-group">
                                 <label htmlFor="goalWeight">Goal Weight:</label>
@@ -149,7 +158,6 @@ const ProfileHeader = ({ firstName, userType, activeTab, onTabChange, loginUserT
                     </div>
                 </div>
             )}
-
         </>
     );
 }

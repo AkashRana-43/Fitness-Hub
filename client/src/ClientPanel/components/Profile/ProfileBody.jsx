@@ -1,17 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom'; // Import useNavigate
 import Img1 from '../../assets/img/bg/BG.jpg';
 
 const ProfileBody = () => {
     const [users, setUsers] = useState([]);
     const [filteredUsers, setFilteredUsers] = useState([]);
     const [userType, setUserType] = useState('All');
-    const navigate = useNavigate();
+    const navigate = useNavigate(); // Use useNavigate hook to get navigate function
 
     useEffect(() => {
         const session = sessionStorage.getItem('session');
-        axios.get('http://localhost:3001/profile/allusers', {
+        axios.get('http://localhost:3001/add_friend/requests/accepted', {
             headers: {
                 'session': session,
             }
@@ -45,6 +45,7 @@ const ProfileBody = () => {
 
     const handleCardClick = (userId) => {
         navigate(`/profile/${userId}`);
+        // console.log(`/profile/${userId}`);
     };
     
     return (

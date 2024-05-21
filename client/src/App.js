@@ -1,6 +1,6 @@
 import React from "react";
-import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom";
-import { useAuth } from "ClientPanel/utils/AuthContext";
+import { BrowserRouter, Route, Routes, Navigate, useParams } from "react-router-dom";
+import { AuthProvider, useAuth } from "ClientPanel/utils/AuthContext";
 
 // Import styles
 import "bootstrap/scss/bootstrap.scss";
@@ -11,7 +11,6 @@ import "./App.css";
 // Import pages and components
 import Home from './ClientPanel/pages/Home';
 import Profile from "ClientPanel/pages/Profile";
-import ProfileId from "ClientPanel/pages/ProfileId"; // Import ProfileId page
 import Login from "ClientPanel/pages/Login";
 import Register from "ClientPanel/pages/Register";
 import Member from "ClientPanel/pages/Member";
@@ -26,6 +25,7 @@ import UserList from "./admin/components/pages/userList/UserList";
 import User from "./admin/components/pages/user/User";
 import NewUser from "./admin/components/pages/newUser/NewUser";
 import BulkMail from "./admin/components/pages/bulkMail/BulkMail";
+import ProfilePage from "ClientPanel/pages/ProfilePage";
 
 function App() {
   const { isLoggedIn, isAdmin } = useAuth();
@@ -33,7 +33,6 @@ function App() {
   if (isAdmin) {
     return (
       <BrowserRouter>
-
         <Topbar />
         <div className="adminContainer">
           <Sidebar />
@@ -54,7 +53,7 @@ function App() {
           <Routes>
             <Route path='/' element={<Home />} />
             <Route path='/profile' element={isLoggedIn ? <Layout showFooter={false}><Profile /></Layout> : <Navigate to='/' />} />
-            <Route path='/profile/:userId' element={isLoggedIn ? <Layout showFooter={false}><ProfileId /></Layout> : <Navigate to='/' />} /> 
+            <Route path='profile/:userId' element={<ProfileIdWrapper />} /> 
             <Route path='/login' element={<Login />} />
             <Route path='/register' element={<Register />} />
             <Route path='/members' element={isLoggedIn ? <Layout showFooter={false}><Member /></Layout> : <Navigate to='/' />} />
@@ -66,4 +65,13 @@ function App() {
   }
 }
 
-export default App;
+const ProfileIdWrapper = () => {
+  let { userId } = useParams();
+  return <ProfilePage userId={userId} />;
+}
+
+export default () => (
+  <AuthProvider>
+    <App />
+  </AuthProvider>
+);
