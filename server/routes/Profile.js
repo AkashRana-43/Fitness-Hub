@@ -54,6 +54,69 @@ router.get("/", async (req, res) => {
     }
 });
 
+router.get("/allusers", async (req, res) => {
+    // Access sesssion_id from the req object
+    try {
+        // Retrieve the session user data
+        const { session_user } = req;
+        // Retrieve the user ID from the request parameters
+        const existingUser = await Register.findOne({ where: {email : session_user.email} });
+        let output;
+        // Check if the session user is an admin
+        if (existingUser.user_type === "admin" || existingUser.user_type === "normal" || existingUser.user_type === "trainer") {
+
+            // Get the IDs of users who are friends with the existingUser
+            const friendIds = await AddFriend.findAll({
+                attributes: ['requesterId', 'recipientId'],
+                where: {
+                    [Sequelize.Op.or]: [
+                        { requesterId: existingUser.id },
+                        { recipientId: existingUser.id }
+                    ],
+                    status: ['accepted','pending']
+                }
+            }).then(friends => {
+                const ids = friends.map(friend => friend.requesterId === existingUser.id ? friend.recipientId : friend.requesterId);
+                ids.push(existingUser.id); // Add the session user's own ID to ensure they are excluded
+                return ids;
+            });                
+
+             // User is an admin, get all profile data for users with user_type "normal" or "trainer"
+            profile_detail = await Profile.findAll({
+                        include: [{
+                            model: Register,
+                            as: 'user',
+                            where: { user_type: ["normal", "trainer"],
+                            id: { [Sequelize.Op.notIn]: [friendIds] }
+                        },
+                            attributes: ['user_type']
+                        }],
+                        attributes: ['user_id', 'first_name', 'last_name', 'contact', 'address', 'profile_image']
+            });  
+
+            // Process the result to access user_type attribute
+            const processedResult = profile_detail.map(profile => ({
+                user_id: profile.user_id,
+                first_name: profile.first_name,
+                last_name: profile.last_name,
+                contact: profile.contact,
+                address: profile.address,
+                profile_image: profile.profile_image,
+                user_type: profile.user.user_type // Access user_type from the Register object
+            }));
+            output = processedResult;
+        } else {
+            // For non-admin users, return unauthorized error
+            return res.status(403).json({ error: "Unauthorized access." });
+        }
+
+        res.status(200).json(output);
+    } catch (error) {
+        console.error("Error for getting user profile data:", error);
+        res.status(500).json({ error: "An error occurred while getting user profile data." });
+    }
+});
+
 
 router.get("/:userId", async (req, res) => {
     const { userId } = req.params;
@@ -82,67 +145,7 @@ router.get("/:userId", async (req, res) => {
 
 
 
-router.get("/allusers", async (req, res) => {
-        // Access sesssion_id from the req object
-        try {
-            // Retrieve the session user data
-            const { session_user } = req;
-            // Retrieve the user ID from the request parameters
-            const existingUser = await Register.findOne({ where: {email : session_user.email} });
-            let output;
-            // Check if the session user is an admin
-            if (existingUser.user_type === "admin" || existingUser.user_type === "normal" || existingUser.user_type === "trainer") {
 
-                // Get the IDs of users who are friends with the existingUser
-                const friendIds = await AddFriend.findAll({
-                    attributes: ['requesterId', 'recipientId'],
-                    where: {
-                        [Sequelize.Op.or]: [
-                            { requesterId: existingUser.id },
-                            { recipientId: existingUser.id }
-                        ],
-                        status: ['accepted','pending']
-                    }
-                }).then(friends => {
-                    const ids = friends.map(friend => friend.requesterId === existingUser.id ? friend.recipientId : friend.requesterId);
-                    return ids;
-                });                
-
-                 // User is an admin, get all profile data for users with user_type "normal" or "trainer"
-                profile_detail = await Profile.findAll({
-                            include: [{
-                                model: Register,
-                                as: 'user',
-                                where: { user_type: ["normal", "trainer"],
-                                id: { [Sequelize.Op.notIn]: [friendIds] }
-                            },
-                                attributes: ['user_type']
-                            }],
-                            attributes: ['user_id', 'first_name', 'last_name', 'contact', 'address', 'profile_image']
-                });  
-
-                // Process the result to access user_type attribute
-                const processedResult = profile_detail.map(profile => ({
-                    user_id: profile.user_id,
-                    first_name: profile.first_name,
-                    last_name: profile.last_name,
-                    contact: profile.contact,
-                    address: profile.address,
-                    profile_image: profile.profile_image,
-                    user_type: profile.user.user_type // Access user_type from the Register object
-                }));
-                output = processedResult;
-            } else {
-                // For non-admin users, return unauthorized error
-                return res.status(403).json({ error: "Unauthorized access." });
-            }
-    
-            res.status(200).json(output);
-        } catch (error) {
-            console.error("Error for getting user profile data:", error);
-            res.status(500).json({ error: "An error occurred while getting user profile data." });
-        }
-});
 
 router.put("/", upload.single('profile_image'),async (req, res) => {
     try {

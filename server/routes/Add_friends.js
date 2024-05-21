@@ -3,43 +3,61 @@ const router = express.Router();
 const { Register, AddFriend, Profile } = require("../models");
 const { Sequelize } = require('sequelize');
 
+
 // Route to get all pending friend requests received by a user
 router.get('/requests/:status', async (req, res) => {
     try {
         const { session_user } = req;
         const { status } = req.params;
-        // Retrieve the user data from the request session
+        console.log("Session User Email: ", session_user.email);
         const existingUser = await Register.findOne({ where: { email: session_user.email } });
-        // Find all pending friend requests where the user is the recipient
-        // Get the IDs of users who are friends with the existingUser
-        const friendIds = await AddFriend.findAll({
+        console.log("Existing User: ", existingUser);
+
+        if (!existingUser) {
+            return res.status(404).json({ error: 'User not found.' });
+        }
+
+        let whereCondition = {
+            status: status
+        };
+
+        if (status === 'accepted') {
+            whereCondition[Sequelize.Op.or] = [
+                { requesterId: existingUser.id },
+                { recipientId: existingUser.id }
+            ];
+        } else {
+            whereCondition.recipientId = existingUser.id;
+        }
+
+        const friends = await AddFriend.findAll({
             attributes: ['requesterId', 'recipientId'],
-            where: {
-                [Sequelize.Op.or]: [
-                    { recipientId: existingUser.id }
-                ],
-                status: [status]
-            }
-        }).then(friends => {
-            const ids = friends.map(friend => friend.requesterId === existingUser.id ? friend.recipientId : friend.requesterId);
-            return ids;
-        });                
+            where: whereCondition
+        });
 
-        // User is an admin, get all profile data for users with user_type "normal" or "trainer"
-        profile_detail = await Profile.findAll({
-                    include: [{
-                        model: Register,
-                        as: 'user',
-                        where: {
-                        id: { [Sequelize.Op.in]: [friendIds] }
-                    },
-                        attributes: ['user_type']
-                    }],
-                    attributes: ['user_id', 'first_name', 'last_name', 'contact', 'address', 'profile_image']
-        });  
+        if (friends.length === 0) {
+            return res.status(404).json({ error: 'No friends found.' });
+        }
 
-        // Process the result to access user_type attribute
-        const processedResult = profile_detail.map(profile => ({
+        const ids = friends.map(friend => 
+            friend.requesterId === existingUser.id ? friend.recipientId : friend.requesterId
+        );
+
+        const profiles = await Profile.findAll({
+            include: [{
+                model: Register,
+                as: 'user',
+                where: { id: { [Sequelize.Op.in]: ids } },
+                attributes: ['user_type']
+            }],
+            attributes: ['user_id', 'first_name', 'last_name', 'contact', 'address', 'profile_image']
+        });
+
+        if (profiles.length === 0) {
+            return res.status(404).json({ error: 'No profiles found.' });
+        }
+
+        const output = profiles.map(profile => ({
             user_id: profile.user_id,
             first_name: profile.first_name,
             last_name: profile.last_name,
@@ -48,7 +66,6 @@ router.get('/requests/:status', async (req, res) => {
             profile_image: profile.profile_image,
             user_type: profile.user.user_type
         }));
-        const output = processedResult;
 
         res.status(200).json(output);
     } catch (error) {
@@ -56,6 +73,7 @@ router.get('/requests/:status', async (req, res) => {
         res.status(500).json({ error: 'An error occurred.' });
     }
 });
+
 
 
 // Route to accept or reject a friend request
@@ -67,12 +85,14 @@ router.put('/request/decision', async(req, res) => {
         // Retrieve the updated user data from the request body
         const existingUser = await Register.findOne({ where: { email: session_user.email } });
         // Find the friend request by ID
-        const friendRequest = await AddFriend.findOne({ where: {requesterId: requesterId } });
+        const friendRequest = await AddFriend.findOne({ where: {requesterId: requesterId,  recipientId: existingUser.id} });
         // Check if the friend request exists
         if (!friendRequest) {
             return res.status(404).json({ error: 'Friend request not found.' });
         }
 
+        console.log(friendRequest.recipientId);
+        console.log(existingUser.id);
         // Check if the user is the recipient of the friend request
         if (existingUser.id !== friendRequest.recipientId) {
             return res.status(403).json({ error: 'You are not authorized to perform this action.' });

@@ -16,13 +16,14 @@ const transporter = nodemailer.createTransport({
     }
 });
 // Function to send emails
-const sendEmail = async (to, subject, html) => {
+const sendEmail = async (to, subject, html, attachments = []) => {
     try {
         const mailOptions = {
             from: 'fitnesshub987@gmail.com',
             to: to,
             subject: subject,
-            html: html
+            html: html,
+            attachments: attachments
         };
 
         const info = await transporter.sendMail(mailOptions);
@@ -51,4 +52,7 @@ const sendToken =  async (email) => {
 };
 
 
-module.exports = { sendEmail, sendToken };
+
+
+
+module.exports = { sendEmail, sendToken};
