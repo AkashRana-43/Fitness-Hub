@@ -109,3 +109,12 @@ a {
     text-decoration: none;
 }
 
+
+.modal {
+    overflow: scroll;
+}
+
+#custom-modal-width {
+    max-width: 700px;
+}
+

@@ -1,8 +1,95 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './css/ProfilePage.css';
 import Img1 from '../../assets/img/bg/BG.jpg';
 
+
 const ProfileHeader = ({ firstName, userType, activeTab, onTabChange }) => {
+
+
+    const [showModal, setShowModal] = useState(false);
+    // const [formData, setFormData] = useState({
+    //     title: '',
+    //     meal_name: '',
+    //     meal_type: '',
+    //     description: '',
+    //     calories: '',
+    //     protein: '',
+    //     carbohydrates: '',
+    //     fat: '',
+    //     fiber: ''
+    //   });
+    const [title, setTitle] = useState('');
+    const [mealName, setMealName] = useState('');
+    const [mealType, setMealType] = useState('');
+    const [description, setDescription] = useState('');
+    const [calories, setCaloreis] = useState('');
+    const [protein, setProtein] = useState('');
+    const [carbohydrates, setCarbohydrates] = useState('');
+    const [fat, setFat] = useState('');
+    const [fiber, setFiber] = useState('');
+
+
+    const handleShow = () => setShowModal(true);
+    const handleClose = () => setShowModal(false);
+
+    const userTypes = localStorage.getItem('user_type');
+
+    const isTrainer = userTypes === 'trainer';
+
+
+
+
+
+
+    const handleSubmit = (event) => {
+
+
+        event.preventDefault();
+        const createDiet = {
+            title: title,
+            meal_name: mealName,
+            meal_type: mealType,
+            description: description,
+            calories: calories,
+            protein: protein,
+            carbohydrates: carbohydrates,
+            fat: fat,
+            fiber: fiber
+        };
+        console.log(JSON.stringify(createDiet));
+        if (!isTrainer) {
+            console.error('Only trainers can create diet entries');
+            return;
+        }
+
+
+        const sessionId = sessionStorage.getItem('session');
+        console.log(sessionId);
+        fetch('http://localhost:3001/diet/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'session': sessionId  // Replace with actual session ID
+            },
+            body: JSON.stringify(createDiet)
+
+        })
+
+            .then(res => {
+                if (!res.ok) {
+                    throw new Error(`HTTP error! status: ${res.status}`);
+                }
+                return res.json();
+            })
+            .then(data => {
+                console.log('Success:', data); // Log the response data
+                alert('Data saved successfully!');
+                handleClose();
+
+            })
+            .catch(err => console.log(err));
+
+    };
 
 
     return (
@@ -44,7 +131,109 @@ const ProfileHeader = ({ firstName, userType, activeTab, onTabChange }) => {
                     </div>
                     <div className="col-lg-4 order-last text-center">
                         <button className="btn mx-4" style={{ backgroundColor: "#F5593D", color: "white", border: 'none' }}>Edit Profile</button>
+                        <button className="btn mx-4" style={{ backgroundColor: "#F5593D", color: "white", border: 'none' }} onClick={handleShow}>Create Diet</button>
                     </div>
+                    
+                    {showModal && isTrainer && (
+                        <div className= "modal show d-block" tabIndex="-1">
+                            <div className="modal-dialog">
+                                <div className="modal-content">
+                                    <div className="modal-header">
+                                        <h5 className="modal-title">Create Diet</h5>
+                                        
+                                        <button type="button" className="btn-close" aria-label="Close" onClick={handleClose}></button>
+                                    </div>
+
+                                    <div className="modal-body">
+                                        <form onSubmit={handleSubmit}>
+                                            <div className="mb-3">
+                                                <label className="form-label">Title</label>
+                                                <input
+                                                    type="text"
+                                                    className="form-control"
+                                                    id="exampleInputText"
+                                                    value={title}
+                                                    onChange={(event) => setTitle(event.target.value)}
+                                                />
+                                                <label className="form-label">Meal Name</label>
+                                                <input
+                                                    type="text"
+                                                    className="form-control"
+                                                    id="exampleInputText"
+                                                    value={mealName}
+                                                    onChange={(event) => setMealName(event.target.value)}
+                                                />
+                                                <label className="form-label">Meal Type</label>
+                                                <input
+                                                    type="text"
+                                                    className="form-control"
+                                                    id="exampleInputText"
+                                                    value={mealType}
+                                                    onChange={(event) => setMealType(event.target.value)}
+                                                />
+                                                <label className="form-label">Description</label>
+                                                <input
+                                                    type="text"
+                                                    className="form-control"
+                                                    id="exampleInputText"
+                                                    value={description}
+                                                    onChange={(event) => setDescription(event.target.value)}
+                                                />
+                                                <label className="form-label">Calories</label>
+                                                <input
+                                                    type="text"
+                                                    className="form-control"
+                                                    id="exampleInputText"
+                                                    value={calories}
+                                                    onChange={(event) => setCaloreis(event.target.value)}
+                                                />
+                                                <label className="form-label">Protein</label>
+                                                <input
+                                                    type="text"
+                                                    className="form-control"
+                                                    id="exampleInputText"
+                                                    value={protein}
+                                                    onChange={(event) => setProtein(event.target.value)}
+                                                />
+                                                <label className="form-label">Carbs</label>
+                                                <input
+                                                    type="text"
+                                                    className="form-control"
+                                                    id="exampleInputText"
+                                                    value={carbohydrates}
+                                                    onChange={(event) => setCarbohydrates(event.target.value)}
+                                                />
+                                                <label className="form-label">Fat</label>
+                                                <input
+                                                    type="text"
+                                                    className="form-control"
+                                                    id="exampleInputText"
+                                                    value={fat}
+                                                    onChange={(event) => setFat(event.target.value)}
+                                                />
+                                                <label className="form-label">Fiber</label>
+                                                <input
+                                                    type="text"
+                                                    className="form-control"
+                                                    id="exampleInputText"
+                                                    value={fiber}
+                                                    onChange={(event) => setFiber(event.target.value)}
+                                                />
+                                            </div>
+                                            <div className="modal-footer">
+                                                <button type="button" className="btn btn-secondary" onClick={handleClose}>
+                                                    Close
+                                                </button>
+                                                <button type="submit" className="btn btn-primary">
+                                                    Save changes
+                                                </button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    )}
                 </div>
             </section>
             <div style={{ padding: '0 40%' }}>
@@ -53,7 +242,7 @@ const ProfileHeader = ({ firstName, userType, activeTab, onTabChange }) => {
                         <button
                             className={`nav-link position-relative rounded-0 d-flex align-items-center justify-content-center bg-transparent fs-3 py-6 border-0 ${activeTab === "profile" ? "active" : ""}`}
                             id="pills-profile-tab"
-                            onClick={() => onTabChange("profile")} 
+                            onClick={() => onTabChange("profile")}
                             type="button"
                             role="tab"
                             aria-controls="pills-profile"
@@ -68,7 +257,7 @@ const ProfileHeader = ({ firstName, userType, activeTab, onTabChange }) => {
                         <button
                             className={`nav-link position-relative rounded-0 d-flex align-items-center justify-content-center bg-transparent fs-3 py-6 border-0 ${activeTab === "friends" ? "active" : ""}`}
                             id="pills-friends-tab"
-                            onClick={() => onTabChange("friends")} 
+                            onClick={() => onTabChange("friends")}
                             type="button"
                             role="tab"
                             aria-controls="pills-friends"
@@ -80,10 +269,13 @@ const ProfileHeader = ({ firstName, userType, activeTab, onTabChange }) => {
                             <span className="d-none d-md-block ml-2">Friends</span>
                         </button>
                     </li>
+                     
+                    
                 </ul>
             </div>
         </>
     );
+
 }
 
 export default ProfileHeader;

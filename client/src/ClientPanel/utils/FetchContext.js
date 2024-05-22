@@ -14,8 +14,11 @@ export const FetchProvider = ({ children }) => {
           // Handle case where session token is not found in localStorage
           return;
       }
-        const response = await axios.get(`http://localhost:3001/user?session=${session}`);
-
+      const response = await axios.get(`http://localhost:3001/profile`, {
+        headers: {
+          'session': session, // Add the session to the headers
+        },
+      });
         setUserData(response.data);
         
       } catch (error) {

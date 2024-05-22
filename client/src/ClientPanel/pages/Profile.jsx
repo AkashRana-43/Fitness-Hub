@@ -15,6 +15,7 @@ const Profile = () => {
   }
 
   const {userData} = useFetch();
+  console.log(userData);
 
   return (
     <Layout showFooter = {false}>

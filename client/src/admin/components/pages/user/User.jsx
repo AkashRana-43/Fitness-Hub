@@ -13,19 +13,7 @@ export default function User() {
 
     const {userId} = useParams();
     console.log(userId);
-    /*useEffect(() => {
-        
-        fetch('http://localhost:3001/profile/', {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                'session': sessionId // Pass the sessionId in the header
-            }
-        })
-        .then(res => res.json()) // Convert the response to JSON
-        .then(data => console.log(data)) // Log the data
-        .catch(err => console.log(err));
-    }, []); */
+    
 
     const handleUpdate = (e) => {
         e.preventDefault();
@@ -38,6 +26,7 @@ export default function User() {
             phone: phone,
             address: address
         };
+        console.log(updatedUserData);
     
         // Send a PUT request to update the user data
         fetch('http://localhost:3001/profile/', {
