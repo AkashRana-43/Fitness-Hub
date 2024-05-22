@@ -1,11 +1,11 @@
 const express = require('express');
 const router = express.Router();
-const { Profile, Diet, Register, DietAssignment } = require('../models'); // Import the Diet and Register models
+const { Profile, Diet, Register, DietAssignment, RequestDiet } = require('../models'); // Import the Diet and Register models
 const { sendEmail } = require('./mail');
 const fs = require('fs');
 const path = require('path');
 const PDFDocument = require('pdfkit');
-
+const QRCode = require('qrcode');
 
 
 router.get('/', async (req, res) => {
@@ -166,8 +166,82 @@ router.delete('/:dietId', async (req, res) => {
     }
 });
 
+router.post('/submitRequest', async (req, res) => {
+    const { requested_to, message } = req.body;
+
+    try {
+        const { session_user } = req;
+
+        // Verify that the requester is the user who has the session
+        const requester = await Register.findOne({ where: { email: session_user.email } });
+
+        if (!requester) {
+            return res.status(404).json({ message: "Requester not found" });
+        }
+
+        const requestee = await Register.findByPk(requested_to);
+
+        if (!requestee) {
+            return res.status(404).json({ message: "Requestee not found" });
+        }
+
+        // Generate QR code with a URL to call an API
+        const apiUrl = `http://192.168.4.49/profile/${requester.id}`;
 
 
+         // Set the path to the uploads directory
+         const uploadsDir = path.join(__dirname, '../uploads/');
+         if (!fs.existsSync(uploadsDir)) {
+             fs.mkdirSync(uploadsDir, { recursive: true });
+         }
+ 
+         // Path to save the QR code image
+         const qrCodePath = path.join(uploadsDir, 'requester_qr.png');
+         await QRCode.toFile(qrCodePath, apiUrl);
+         
+         const requesterProfile = await Profile.findOne({ where: { user_id: requester.id } });
+         console.log(requesterProfile.first_name);
+        // Construct the HTML email content
+        const emailContent = `<h1>You have a new diet request from ${requesterProfile.first_name}</h1>
+                              <p><strong>Message:</strong> ${message}</p>
+                              <p><strong>Details of the requester:</strong></p>
+                              <p><strong>Name : </strong>${requesterProfile.first_name}  ${requesterProfile.last_name}</p>
+                              <p><strong>Contact : </strong>${requesterProfile.contact}</p>
+                              <p><strong>Address : </strong>${requesterProfile.address}</p>
+                              <p></p>
+                              <p></p>
+                              <p>With Regards,</p>
+                              <p> ${requesterProfile.first_name}</p>
+                              <p></p>
+                              <p>See attached QR code for more details.</p>`;
+
+        // Send email using the existing sendEmail function with the QR code image attached
+        await sendEmail(requestee.email, 'New Diet Request', emailContent, [{
+            filename: 'requester_qr.png',
+            path: qrCodePath,
+            contentType: 'image/png'
+        }]);
+        
+        // Create the request in the database
+        const newRequest = await RequestDiet.create({
+            requested_by: requester.id,
+            requested_to,
+            message,
+            status: false // Assuming 'false' means the request is not yet approved
+        });
+
+        res.status(201).json({ message: 'Request submitted, saved in database, and email sent successfully', requestId: newRequest.id });
+    } catch (error) {
+        console.error('Error:', error);
+        res.status(500).json({ message: 'Failed to process the request', error: error.message });
+    }
+});
+
+// Route to serve the QR code image for testing
+router.get('/testQR', (req, res) => {
+    const qrCodePath = path.join(__dirname, '../uploads/requester_qr.png');
+    res.sendFile(qrCodePath);
+});
 
 router.post('/assign_diets', async (req, res) => {
     try {
@@ -240,49 +314,6 @@ router.post('/assign_diets', async (req, res) => {
     } catch (error) {
         console.error('Error:', error);
         res.status(500).json({ error: 'An error occurred.' });
-    }
-});
-
-router.post('/submitRequest', async (req, res) => {
-    const { requested_by, requested_to, message } = req.body;
-
-    try {
-        const requester = await Register.findByPk(requested_by);
-        const requestee = await Register.findByPk(requested_to);
-
-        if (!requester || !requestee) {
-            return res.status(404).json({ message: "Requester or requestee not found" });
-        }
-
-
-        // Generate QR code with requester's profile details
-        const qrData = JSON.stringify({
-            name: requester.name, // Adjust according to your model attributes
-            email: requester.email
-        });
-        const qrCodeDataURL = await QRCode.toDataURL(qrData);
-
-        // Construct the HTML email content
-        const emailContent = `<h1>You have a new diet request from ${requester.name}</h1>
-                              <p>Message: ${message}</p>
-                              <p>Details of the requester:</p>
-                              <img src="${qrCodeDataURL}" alt="QR Code with requester's details"/>`;
-
-        // Send email using the existing sendEmail function
-        await sendEmail(requestee.email, 'New Diet Request', emailContent);
-
-        // Create the request in the database
-        const newRequest = await RequestDiet.create({
-            requested_by,
-            requested_to,
-            message,
-            status: false // Assuming 'false' means the request is not yet approved
-        });
-
-        res.status(201).json({ message: 'Request submitted, saved in database, and email sent successfully', requestId: newRequest.id });
-    } catch (error) {
-        console.error('Error:', error);
-        res.status(500).json({ message: 'Failed to process the request', error: error.message });
     }
 });
 
