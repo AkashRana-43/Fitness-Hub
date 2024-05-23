@@ -65,6 +65,7 @@ const AssignModal = ({ show, onHide, userId }) => {
               autoHeight
               checkboxSelection
               getRowId={getRowId}
+              disableRowSelectionOnClick
             />
           </div>
           <div className="modal-footer">

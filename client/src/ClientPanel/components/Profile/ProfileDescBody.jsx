@@ -5,6 +5,8 @@ import AssignModal from './AssignModal';
 const ProfileDescBody = () => {
 
     const [showAssignModal, setShowAssignModal] = useState(false); // State for modal visibility
+    const [selectedUserId, setSelectedUserId] = useState(null); // State to store selected user ID
+
     
     const usersData = [
         { id: 1, firstName: 'John', contact: '+1234567890', address: '123 Main St', goal: 'Decrease Fat' },
@@ -25,7 +27,10 @@ const ProfileDescBody = () => {
           renderCell: (params) => (
             <button
               className="btn btn-sm btn-primary"
-              onClick={handleAssignClick} // Trigger modal on button click
+              onClick={() => {
+                setSelectedUserId(params.row.id); // Set selected user ID on button click
+                setShowAssignModal(true); // Show the modal
+              }}
             >
               Assign
             </button>
@@ -35,10 +40,11 @@ const ProfileDescBody = () => {
         
       ];
 
-      const handleAssignClick = () => {
-        setShowAssignModal(true); // Show the modal
-      };
+      // const handleAssignClick = () => {
+      //   setShowAssignModal(true); // Show the modal
+      // };
       console.log(showAssignModal);
+      console.log(`userId: ${selectedUserId}`)
      
 
       
@@ -59,6 +65,7 @@ const ProfileDescBody = () => {
                                 pageSize={10}
                                 rowsPerPageOptions={[5, 10, 20]}
                                 autoHeight
+                                disableRowSelectionOnClick
                             />
                              {showAssignModal && (
                                 <AssignModal
