@@ -9,17 +9,17 @@ const ProfileDescBody = () => {
 
     
     const usersData = [
-        { id: 1, firstName: 'John', contact: '+1234567890', address: '123 Main St', goal: 'Decrease Fat' },
-        { id: 2, firstName: 'Jane', contact: '+9876543210', address: '456 Elm St', goal: 'Gain weight' },
-        { id: 3, firstName: 'Mike', contact: '+0123456789', address: '789 Oak Ave', goal: 'Keto diet' },
+        { id: 1, requested_by: 'John', requested_to: '+1234567890', message: '123 Main St', status: 'Decrease Fat' },
+        { id: 2, requested_by: 'Jane', requested_to: '+9876543210', message: '456 Elm St', status: 'Gain weight' },
+        { id: 3, requested_by: 'Mike', requested_to: '+0123456789', message: '789 Oak Ave', status: 'Keto diet' },
       ];
     
       const columns = [
         { field: 'id', headerName: 'ID', width: 70 },
-        { field: 'firstName', headerName: 'First Name', width: 150 },
-        { field: 'contact', headerName: 'Contact', width: 150 },
-        { field: 'address', headerName: 'Address', width: 250 },
-        { field: 'goal', headerName: 'Goal', width: 200 },
+        { field: 'requested_by', headerName: 'Requested By', width: 150 },
+        { field: 'requested_to', headerName: 'Requested To', width: 150 },
+        { field: 'message', headerName: 'Message', width: 250 },
+        { field: 'status', headerName: 'Status', width: 200 },
         {
           field: 'actions',
           headerName: 'Action',
@@ -70,7 +70,8 @@ const ProfileDescBody = () => {
                              {showAssignModal && (
                                 <AssignModal
                                 show={showAssignModal} // Pass modal visibility state
-                                onHide={() => setShowAssignModal(false)} /> )}
+                                onHide={() => setShowAssignModal(false)}
+                                userID = {selectedUserId} /> )}
                             
                         </div>
                        
