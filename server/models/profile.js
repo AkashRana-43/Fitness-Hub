@@ -24,10 +24,35 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.STRING,
             allowNull: true,
         },
+        current_height: {
+            type: DataTypes.FLOAT,
+            allowNull: true,
+        },
+        current_weight: {
+            type: DataTypes.FLOAT,
+            allowNull: true,
+        },
+        sex: {
+            type: DataTypes.STRING,
+            allowNull: true,
+        },
+        body_type: {
+            type: DataTypes.STRING,
+            allowNull: true,
+        },
+        goal_weight: {
+            type: DataTypes.FLOAT,
+            allowNull: true,
+        },
+        goal_body_type: {
+            type: DataTypes.STRING,
+            allowNull: true,
+        },
         profile_image: {
             type: DataTypes.STRING, // Assuming store the file path
             allowNull: true,
         },
+
     });
     // Define associations if needed
     Profile.associate = (models) => {

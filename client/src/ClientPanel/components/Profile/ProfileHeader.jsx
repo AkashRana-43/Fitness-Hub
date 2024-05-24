@@ -1,9 +1,24 @@
 import React, { useState } from 'react';
 import './css/ProfilePage.css';
 import Img1 from '../../assets/img/bg/BG.jpg';
+import Img2 from "../../uploads/profile_image-1716529835662-721988039.jpeg"
 import './css/ProfileEditForm.css';
 
-const ProfileHeader = ({ firstName, userType, activeTab, onTabChange, loginUserType }) => {
+const ProfileHeader = ({ firstName, userType, activeTab, onTabChange, image }) => {
+    const [formData, setFormData] = useState({
+        first_name: '',
+        last_name: '',
+        profile_image: null,
+        current_height: '',
+        current_weight: '',
+        sex: 'male',
+        body_type: 'thin',
+        contact: '',
+        address: '',
+        goal_weight: '',
+        goal_body_type: 'fit'
+    });
+
     const [showPopup, setShowPopup] = useState(false);
 
     const togglePopup = () => {
@@ -14,24 +29,38 @@ const ProfileHeader = ({ firstName, userType, activeTab, onTabChange, loginUserT
         setShowPopup(false);
     };
 
+    const handleChange = (e) => {
+        const { id, value, type, files } = e.target;
+        setFormData({
+            ...formData,
+            [id]: type === 'file' ? files[0] : value
+        });
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         togglePopup();
     
-        const formData = new FormData(e.target);
-    
         const session = sessionStorage.getItem('session');
         try {
+            const formDataToSend = new FormData();
+            for (const key in formData) {
+                formDataToSend.append(key, formData[key]);
+            }
+    
             const response = await fetch('http://localhost:3001/profile', {
                 method: 'PUT',
                 headers: {
                     'session': session,
                 },
-                body: formData
+                body: formDataToSend
             });
     
             if (response.ok) {
                 console.log('Profile updated successfully');
+                // Fetch updated user data and update state
+                const updatedUserData = await response.json(); // Assuming the server returns the updated user data
+                setFormData(updatedUserData); // Update state with the new data
             } else {
                 console.error('Failed to update profile');
             }
@@ -39,11 +68,11 @@ const ProfileHeader = ({ firstName, userType, activeTab, onTabChange, loginUserT
             console.error('Error:', error);
         }
     };
+    
 
     const capitalizeFirstLetter = (string) => {
         return string.charAt(0).toUpperCase() + string.slice(1);
     };
-
 
     return (
         <>
@@ -70,7 +99,8 @@ const ProfileHeader = ({ firstName, userType, activeTab, onTabChange, loginUserT
                             <div className="d-flex align-items-center justify-content-center mb-2">
                                 <div className="linear-gradient d-flex align-items-center justify-content-center rounded-circle" style={{ width: '110px', height: '110px' }}>
                                     <div className="border border-4 border-white d-flex align-items-center justify-content-center rounded-circle overflow-hidden" style={{ width: '100px', height: '100px' }}>
-                                        <img src={Img1} alt="" className="w-100 h-100" />
+                                        <img src={Img2} alt="" className="w-100 h-100" />
+                                        <img src={image} alt="" className="w-100 h-100" />
                                     </div>
                                 </div>
                             </div>
@@ -120,61 +150,62 @@ const ProfileHeader = ({ firstName, userType, activeTab, onTabChange, loginUserT
                     </li>
                 </ul>
             </div>
+
             {showPopup && (
                 <div className="popup-overlay" style={{ padding: '0', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                     <div className="popup-content nav nav-pills user-profile-tab justify-content-center mt-0 rounded-2" style={{ width: '100%', maxWidth: '500px', borderRadius: '10px', background: 'rgba(255, 255, 255, 0.5)', backdropFilter: 'blur(10px)', boxShadow: "0 5px 15px 0 rgba(0, 0, 0, 0.25)" }}>
                         <form onSubmit={handleSubmit} style={{ padding: '20px', width: '100%', textAlign: 'center' }}>
                             <button type="button" className="close-button" onClick={closeForm}>&times;</button>
                             <div className="form-group">
-                                <label htmlFor="firstName">Firstname:</label>
-                                <input type="text" id="firstName" className="form-control" autoComplete="given-name" />
+                                <label htmlFor="first_name">Firstname:</label>
+                                <input type="text" id="first_name" className="form-control" autoComplete="given-name" onChange={handleChange} />
                             </div>
                             <div className="form-group">
-                                <label htmlFor="lastName">Lastname:</label>
-                                <input type="text" id="lastName" className="form-control" autoComplete="family-name" />
+                                <label htmlFor="last_name">Lastname:</label>
+                                <input type="text" id="last_name" className="form-control" autoComplete="family-name" onChange={handleChange} />
                             </div>
                             <div className="form-group">
-                                <label htmlFor="profileImage">Profile Image:</label>
-                                <input type="file" id="profileImage" className="form-control" />
+                                <label htmlFor="profile_image">Profile Image:</label>
+                                <input type="file" id="profile_image" className="form-control" onChange={handleChange} />
                             </div>
                             <div className="form-group">
-                                <label htmlFor="currentHeight">Current Height:</label>
-                                <input type="text" id="currentHeight" className="form-control" />
+                                <label htmlFor="current_height">Current Height:</label>
+                                <input type="text" id="current_height" className="form-control" onChange={handleChange} />
                             </div>
                             <div className="form-group">
-                                <label htmlFor="currentWeight">Current Weight:</label>
-                                <input type="text" id="currentWeight" className="form-control" />
+                                <label htmlFor="current_weight">Current Weight:</label>
+                                <input type="text" id="current_weight" className="form-control" onChange={handleChange} />
                             </div>
                             <div className="form-group">
                                 <label htmlFor="sex">Sex:</label>
-                                <select id="sex" className="form-select">
+                                <select id="sex" className="form-select" onChange={handleChange}>
                                     <option value="male">Male</option>
                                     <option value="female">Female</option>
                                 </select>
                             </div>
                             <div className="form-group">
-                                <label htmlFor="bodyType">Body Type:</label>
-                                <select id="bodyType" className="form-select">
+                                <label htmlFor="body_type">Body Type:</label>
+                                <select id="body_type" className="form-select" onChange={handleChange}>
                                     <option value="thin">Thin</option>
                                     <option value="moderate">Moderate</option>
                                     <option value="fat">Fat</option>
                                 </select>
                             </div>
                             <div className="form-group">
-                                <label htmlFor="phone">Phone:</label>
-                                <input type="text" id="phone" className="form-control" />
+                                <label htmlFor="contact">Phone:</label>
+                                <input type="text" id="contact" className="form-control" onChange={handleChange} />
                             </div>
                             <div className="form-group">
                                 <label htmlFor="address">Address:</label>
-                                <input type="text" id="address" className="form-control" />
+                                <input type="text" id="address" className="form-control" onChange={handleChange} />
                             </div>
                             <div className="form-group">
-                                <label htmlFor="goalWeight">Goal Weight:</label>
-                                <input type="text" id="goalWeight" className="form-control" />
+                                <label htmlFor="goal_weight">Goal Weight:</label>
+                                <input type="text" id="goal_weight" className="form-control" onChange={handleChange} />
                             </div>
                             <div className="form-group">
-                                <label htmlFor="goalBodyType">Goal Body Type:</label>
-                                <select id="goalBodyType" className="form-select">
+                                <label htmlFor="goal_body_type">Goal Body Type:</label>
+                                <select id="goal_body_type" className="form-select" onChange={handleChange}>
                                     <option value="fit">Fit</option>
                                     <option value="bulk">Bulk</option>
                                 </select>
@@ -186,6 +217,9 @@ const ProfileHeader = ({ firstName, userType, activeTab, onTabChange, loginUserT
             )}
         </>
     );
+
+
+
 }
 
 export default ProfileHeader;

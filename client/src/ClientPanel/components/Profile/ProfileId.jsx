@@ -2,19 +2,20 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './css/ProfilePage.css';
 import Img1 from '../../assets/img/bg/BG.jpg';
-import { useAuth } from 'ClientPanel/utils/AuthContext'; // Import useAuth
 
 const ProfileId = ({ userId }) => {
     const [user, setUser] = useState(null);
     const [showPopup, setShowPopup] = useState(false);
-    const { userType: loggedInUserType, isLoggedIn } = useAuth();
+    const [loggedInUserType, setLoggedInUserType] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
-        if (isLoggedIn && loggedInUserType !== null) {
+        const userType = localStorage.getItem('user_type');
+        if (userType) {
+            setLoggedInUserType(userType);
             setIsLoading(false);
         }
-    }, [isLoggedIn, loggedInUserType]);
+    }, []);
 
     const togglePopup = () => {
         setShowPopup(!showPopup);
@@ -24,11 +25,37 @@ const ProfileId = ({ userId }) => {
         setShowPopup(false);
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        togglePopup();
-    };
+        togglePopup()
+        const session = sessionStorage.getItem('session');
+        const requestData = {
+            requested_to: userId,
+            message: document.getElementById('Request').value 
+        };
+        console.log(requestData);
+    
+        try {
+            const response = await fetch('http://localhost:3001/diet/submitRequest', {
+                method: 'POST',
+                headers: {
+                    'session': session,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(requestData)
+            });
+    
+            if (!response.ok) {
+                throw new Error('Request failed with status: ' + response.status);
+            }
+    
+            console.log('Request submitted successfully');
 
+        } catch (error) {
+            console.error('Error submitting request:', error.message);
+        }
+    };
+    
     useEffect(() => {
         const session = sessionStorage.getItem('session');
         axios.get(`http://localhost:3001/profile/${userId}`, {
@@ -201,3 +228,6 @@ const ProfileId = ({ userId }) => {
 }
 
 export default ProfileId;
+
+
+
