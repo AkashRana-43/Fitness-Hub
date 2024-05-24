@@ -23,7 +23,7 @@ const logoutRouter = require("./routes/Sign_out");
 const addfriendRouter = require("./routes/Add_friends");
 const bulkMessageRouter = require("./routes/Bulk_message");
 const dietRouter = require("./routes/Diet");
-const requestDietRouter = require("./routes/Request_diet");
+const requestDietRouter = require("./route/Request_diet");
 
 
 app.use("/register", registerRouter);
