@@ -45,7 +45,6 @@ const ProfileBody = () => {
 
     const handleCardClick = (userId) => {
         navigate(`/profile/${userId}`);
-        // console.log(`/profile/${userId}`);
     };
     
     return (
@@ -58,7 +57,7 @@ const ProfileBody = () => {
                             <select className="userDropdownicon" value={userType} onChange={(e) => setUserType(e.target.value)} style={{ backgroundColor: '#F5593D' }}>
                                 <option value="All">All</option>
                                 <option value="Trainer">Trainer</option>
-                                <option value="Client">Client</option>
+                                <option value="normal">Normal</option>
                             </select>
                         </div>
                         <form className="position-relative">

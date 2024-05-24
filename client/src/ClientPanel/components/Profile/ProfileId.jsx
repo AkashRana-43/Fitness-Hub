@@ -7,7 +7,14 @@ import { useAuth } from 'ClientPanel/utils/AuthContext'; // Import useAuth
 const ProfileId = ({ userId }) => {
     const [user, setUser] = useState(null);
     const [showPopup, setShowPopup] = useState(false);
-    const { userType: loggedInUserType } = useAuth(); // Get logged-in user's userType
+    const { userType: loggedInUserType, isLoggedIn } = useAuth();
+    const [isLoading, setIsLoading] = useState(true);
+
+    useEffect(() => {
+        if (isLoggedIn && loggedInUserType !== null) {
+            setIsLoading(false);
+        }
+    }, [isLoggedIn, loggedInUserType]);
 
     const togglePopup = () => {
         setShowPopup(!showPopup);
@@ -38,7 +45,7 @@ const ProfileId = ({ userId }) => {
             });
     }, [userId]);
 
-    if (!user) {
+    if (isLoading || !user) {
         return <div>Loading...</div>;
     }
 
@@ -53,14 +60,85 @@ const ProfileId = ({ userId }) => {
                     </div>
                 );
             } else if (userType === 'normal') {
+                return null; //add if needed any button
+            }
+        }
+        return null;
+    };
+
+    const renderProfile = () => {
+        if (loggedInUserType === 'normal') {
+            if (userType === 'trainer') {
+                return null;
+            } else if (userType === 'normal') {
                 return (
-                    <div className="col-lg-4 order-last text-center">
-                        <button className="btn mx-4" style={{ backgroundColor: "#F5593D", color: "white", border: 'none' }}>Create Diet</button>
+                    <div className="row">
+                        <div className="col">
+                            <div className="card mb-4">
+                                <div className="card-body">
+                                    <h6 className="my-3">My Details</h6>
+                                    <div className="row mb-2">
+                                        <div className="col-md-3 text-muted">Height:</div>
+                                        <div className="col-md-9">
+                                            167 cm
+                                        </div>
+                                    </div>
+                                    <div className="row mb-2">
+                                        <div className="col-md-3 text-muted">Weight:</div>
+                                        <div className="col-md-9">
+                                            70 kg
+                                        </div>
+                                    </div>
+                                    <div className="row mb-2">
+                                        <div className="col-md-3 text-muted">Sex:</div>
+                                        <div className="col-md-9">
+                                            Female
+                                        </div>
+                                    </div>
+                                    <div className="row mb-2">
+                                        <div className="col-md-3 text-muted">Body Type:</div>
+                                        <div className="col-md-9">
+                                            Fat
+                                        </div>
+                                    </div>
+                                    <h6 className="my-3">Contacts</h6>
+                                    <div className="row mb-2">
+                                        <div className="col-md-3 text-muted">Phone:</div>
+                                        <div className="col-md-9">
+                                            +61 (04)45 678 910
+                                        </div>
+                                    </div>
+                                    <div className="row mb-2">
+                                        <div className="col-md-3 text-muted">Address:</div>
+                                        <div className="col-md-9">
+                                            1 Argyle street, Prospect SA
+                                        </div>
+                                    </div>
+                                    <h6 className="my-3">Goal</h6>
+                                    <div className="row mb-2">
+                                        <div className="col-md-3 text-muted">Weight:</div>
+                                        <div className="col-md-9">
+                                            50 kg
+                                        </div>
+                                    </div>
+                                    <div className="row mb-2">
+                                        <div className="col-md-3 text-muted">Body Type:</div>
+                                        <div className="col-md-9">
+                                            Moderate
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 );
             }
         }
         return null;
+    }
+
+    const capitalizeFirstLetter = (string) => {
+        return string.charAt(0).toUpperCase() + string.slice(1);
     };
 
     return (
@@ -87,7 +165,7 @@ const ProfileId = ({ userId }) => {
                             <div className="text-center">
                                 {/* Display user name and type */}
                                 <h5 className="fs-5 mb-0 fw-semibold">{user.first_name}</h5>
-                                <p className="mb-0 fs-4">{userType}</p> {/* Display userType */}
+                                <p className="mb-0 fs-4">{capitalizeFirstLetter(userType)}</p>
                             </div>
                         </div>
                     </div>
@@ -96,9 +174,10 @@ const ProfileId = ({ userId }) => {
                             <div className="popup-content nav nav-pills user-profile-tab justify-content-center mt-0 rounded-2" style={{ width: '100%', maxWidth: '500px', borderRadius: '10px', background: 'rgba(255, 255, 255, 0.5)', backdropFilter: 'blur(10px)', boxShadow: "0 5px 15px 0 rgba(0, 0, 0, 0.25)" }}>
 
                                 <form onSubmit={handleSubmit} style={{ padding: '20px', width: '100%', textAlign: 'center' }}>
+                                    <button type="button" className="close-button" onClick={closeForm}>&times;</button>
                                     <h6 style={{ textAlign: 'center', marginBottom: '20px' }}>Request Diet</h6>
                                     <div style={{ paddingBottom: '20px' }}>
-                                        QR Code
+                                        Make a request
                                     </div>
                                     <div className="form-group">
                                         <textarea id="Request" style={{ width: '100%', minHeight: '100px' }}></textarea>
@@ -112,6 +191,10 @@ const ProfileId = ({ userId }) => {
 
                     {renderButton()}
                 </div>
+                <div style={{ paddingTop: '20px' }}>
+                    {renderProfile()}
+                </div>
+
             </section>
         </>
     );

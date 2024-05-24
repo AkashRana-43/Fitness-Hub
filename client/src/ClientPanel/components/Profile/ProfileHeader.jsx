@@ -14,10 +14,36 @@ const ProfileHeader = ({ firstName, userType, activeTab, onTabChange, loginUserT
         setShowPopup(false);
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         togglePopup();
+    
+        const formData = new FormData(e.target);
+    
+        const session = sessionStorage.getItem('session');
+        try {
+            const response = await fetch('http://localhost:3001/profile', {
+                method: 'PUT',
+                headers: {
+                    'session': session,
+                },
+                body: formData
+            });
+    
+            if (response.ok) {
+                console.log('Profile updated successfully');
+            } else {
+                console.error('Failed to update profile');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+        }
     };
+
+    const capitalizeFirstLetter = (string) => {
+        return string.charAt(0).toUpperCase() + string.slice(1);
+    };
+
 
     return (
         <>
@@ -50,7 +76,7 @@ const ProfileHeader = ({ firstName, userType, activeTab, onTabChange, loginUserT
                             </div>
                             <div className="text-center">
                                 <h5 className="fs-5 mb-0 fw-semibold">{firstName}</h5>
-                                <p className="mb-0 fs-4">{userType}</p>
+                                <p className="mb-0 fs-4">{capitalizeFirstLetter(userType)}</p>
                             </div>
                         </div>
                     </div>

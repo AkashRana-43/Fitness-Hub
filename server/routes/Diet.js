@@ -2,6 +2,11 @@ const express = require('express');
 const router = express.Router();
 const { Profile, Diet, Register, DietAssignment } = require('../models'); // Import the Diet and Register models
 const { sendEmail } = require('./mail');
+const fs = require('fs');
+const path = require('path');
+const PDFDocument = require('pdfkit');
+
+
 
 router.get('/', async (req, res) => {
     try {
@@ -25,7 +30,7 @@ router.get('/', async (req, res) => {
             // If not an admin, fetch only the diet entries that belong to the user
             diets = await Diet.findAll({
                 where: { user_id: existingUser.id },
-                attributes: ['title', 'meal_name', 'meal_type', 'description', 'calories', 'protein', 'carbohydrates', 'fat', 'fiber']
+                attributes: ['id','title', 'meal_name', 'meal_type', 'description', 'calories', 'protein', 'carbohydrates', 'fat', 'fiber']
             });
         }
 
@@ -162,80 +167,125 @@ router.delete('/:dietId', async (req, res) => {
 });
 
 
+
+
 router.post('/assign_diets', async (req, res) => {
     try {
         const { session_user } = req;
-        const { dietIds, userId } = req.body; // dietIds is an array of diet IDs
+        const { dietIds, userId } = req.body;
 
         const trainer = await Register.findOne({ where: { email: session_user.email, user_type: 'trainer' } });
         if (!trainer) {
             return res.status(403).json({ error: 'Only trainers can assign diets' });
         }
 
-        // Verify the diets exist and are created by this trainer
         const diets = await Diet.findAll({
             where: {
                 id: dietIds,
                 user_id: trainer.id
             }
         });
+
         if (diets.length !== dietIds.length) {
             return res.status(404).json({ error: 'One or more diets not found or not created by this trainer' });
         }
 
-        // Create multiple DietAssignment entries for the specified user
-        const assignments = dietIds.map(dietId => ({
-            diet_id: dietId,
-            user_id: userId
-        }));
-        await DietAssignment.bulkCreate(assignments, {
-            ignoreDuplicates: true // This prevents re-assigning the same diet to the same user
-        });
-
-        // Email content construction and sending
         const user = await Register.findByPk(userId);
         const userEmail = user.email;
-        const trainerProfile = await Profile.findOne({
-            where: { user_id: trainer.id }
-        });
-        const userProfile = await Profile.findOne({
-            where: { user_id: userId}
-        });
-        
-        if (!trainerProfile || !userProfile) {
-            return res.status(404).json({ error: 'Profile not found' });
+        const trainerProfile = await Profile.findOne({ where: { user_id: trainer.id } });
+        const userProfile = await Profile.findOne({ where: { user_id: userId } });
+
+        // Set the path to the uploads directory
+        const uploadsDir = path.join(__dirname, '../uploads/'); // Adjust the path as necessary
+        if (!fs.existsSync(uploadsDir)) {
+            fs.mkdirSync(uploadsDir, { recursive: true });
         }
-        const dietDetails = diets.map(diet => `
-        <li>
-          <strong>Title:</strong> ${diet.title}<br>
-          <strong>Meal Name:</strong> ${diet.meal_name}<br>
-          <strong>Meal Type:</strong> ${diet.meal_type}<br>
-          <strong>Description:</strong> ${diet.description}<br>
-          <strong>Calories:</strong> ${diet.calories} kcal<br>
-          <strong>Protein:</strong> ${diet.protein} g<br>
-          <strong>Carbohydrates:</strong> ${diet.carbohydrates} g<br>
-          <strong>Fat:</strong> ${diet.fat} g<br>
-          <strong>Fiber:</strong> ${diet.fiber} g
-        </li><br>
-      `).join('');
 
-        const emailContent = `
-        <h1>Diet Plan Assigned</h1>
-        <p>Dear ${userProfile.first_name},</p>
-        <p>You have been assigned a new diet plan by your trainer (${trainerProfile.first_name}), which you requested to him. Here are the details of your breakfast:</p>
-        <ul>${dietDetails}</ul>
-        <p>Best regards,</p>
-        <p>${trainerProfile.first_name}</p>
-      `;
-        await sendEmail(userEmail, 'Your Diet Plan', emailContent);
+        // Generate PDF
+        const pdfPath = path.join(uploadsDir, 'DietPlan.pdf');
+        const doc = new PDFDocument();
+        const stream = fs.createWriteStream(pdfPath);
+        doc.pipe(stream);
+        doc.fontSize(16).text('Diet Plan Assignment', { underline: true });
+        diets.forEach(diet => {
+            doc.moveDown().fontSize(14).text(`Title: ${diet.title}`);
+            doc.text(`Meal Name: ${diet.meal_name}`);
+            doc.text(`Meal Type: ${diet.meal_type}`);
+            doc.text(`Calories: ${diet.calories} kcal`);
+            doc.text(`Protein: ${diet.protein} g`);
+            doc.text(`Carbohydrates: ${diet.carbohydrates} g`);
+            doc.text(`Fat: ${diet.fat} g`);
+            doc.text(`Fiber: ${diet.fiber} g`);
+            doc.moveDown();
+        });
+        doc.end();
 
+        // Ensure the PDF is fully written before sending the email
+        stream.on('finish', async () => {
+            // Send Email with PDF attachment
+            const emailContent = `Dear ${userProfile.first_name},\nYou have been assigned new diets by ${trainerProfile.first_name}. Please check the attached PDF for details.` ;
+            await sendEmail(userEmail, 'Your Assigned Diet Plan', emailContent, [{
+                filename: 'DietPlan.pdf',
+                path: pdfPath,
+                contentType: 'application/pdf'
+            }]);
 
-        res.status(200).json({ message: 'Diets successfully assigned to user' });
+            res.status(200).json({ message: 'Diets successfully assigned and emailed with details in PDF format.' });
+        });
+
+        stream.on('error', (err) => {
+            console.error('Stream Error:', err);
+            res.status(500).json({ error: 'Error writing PDF file.' });
+        });
     } catch (error) {
-        console.error('Error assigning diets to user:', error);
-        res.status(500).json({ error: 'An error occurred while assigning the diets' });
+        console.error('Error:', error);
+        res.status(500).json({ error: 'An error occurred.' });
     }
 });
+
+router.post('/submitRequest', async (req, res) => {
+    const { requested_by, requested_to, message } = req.body;
+
+    try {
+        const requester = await Register.findByPk(requested_by);
+        const requestee = await Register.findByPk(requested_to);
+
+        if (!requester || !requestee) {
+            return res.status(404).json({ message: "Requester or requestee not found" });
+        }
+
+
+        // Generate QR code with requester's profile details
+        const qrData = JSON.stringify({
+            name: requester.name, // Adjust according to your model attributes
+            email: requester.email
+        });
+        const qrCodeDataURL = await QRCode.toDataURL(qrData);
+
+        // Construct the HTML email content
+        const emailContent = `<h1>You have a new diet request from ${requester.name}</h1>
+                              <p>Message: ${message}</p>
+                              <p>Details of the requester:</p>
+                              <img src="${qrCodeDataURL}" alt="QR Code with requester's details"/>`;
+
+        // Send email using the existing sendEmail function
+        await sendEmail(requestee.email, 'New Diet Request', emailContent);
+
+        // Create the request in the database
+        const newRequest = await RequestDiet.create({
+            requested_by,
+            requested_to,
+            message,
+            status: false // Assuming 'false' means the request is not yet approved
+        });
+
+        res.status(201).json({ message: 'Request submitted, saved in database, and email sent successfully', requestId: newRequest.id });
+    } catch (error) {
+        console.error('Error:', error);
+        res.status(500).json({ message: 'Failed to process the request', error: error.message });
+    }
+});
+
 
 
 

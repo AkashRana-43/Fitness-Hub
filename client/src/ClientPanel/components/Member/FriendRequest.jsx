@@ -20,6 +20,9 @@ const FriendRequest = () => {
             });
             setRequesters(response.data);
             console.log('Requester:', response.data);
+
+            // Store pending friend requests in local storage
+            localStorage.setItem('pendingRequests', JSON.stringify(response.data));
         } catch (error) {
             console.error('Error fetching friend requests:', error);
         }
@@ -39,11 +42,21 @@ const FriendRequest = () => {
                 }
             });
             console.log(response.data.message);
-            // After successful response, update the UI by refetching friend requests
-            fetchFriendRequests();
+            
+            // Remove the requester from the state after a decision is made
+            setRequesters((prevRequesters) => prevRequesters.filter(requester => requester.user_id !== requesterId));
+            
+            // Remove pending friend request from local storage
+            const pendingRequests = JSON.parse(localStorage.getItem('pendingRequests'));
+            const updatedRequests = pendingRequests.filter(request => request.user_id !== requesterId);
+            localStorage.setItem('pendingRequests', JSON.stringify(updatedRequests));
         } catch (error) {
             console.error('Error making decision:', error);
         }
+    };
+
+    const capitalizeFirstLetter = (string) => {
+        return string.charAt(0).toUpperCase() + string.slice(1);
     };
 
     return (
@@ -75,10 +88,10 @@ const FriendRequest = () => {
                                         <div className="col-md-2 col-sm-2">
                                             <h5 style={{ marginBottom: 0 }}>
                                                 <a href={requester.profileLink || '#'} className="profile-link" style={{ color: '#F5593D', fontWeight: 'bold' }}>
-                                                    {requester.name}
+                                                    {requester.first_name}
                                                 </a>
                                             </h5>
-                                            <p style={{ marginBottom: 0 }}>{requester.role}</p>
+                                            <p style={{ marginBottom: 0 }}>{capitalizeFirstLetter(requester.user_type)}</p>
                                         </div>
                                         <div className="col-md-6 col-sm-6"></div>
                                         <div className="col-md-1 col-sm-1">

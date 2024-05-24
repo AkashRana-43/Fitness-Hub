@@ -77,6 +77,7 @@ router.get("/allusers", async (req, res) => {
                 }
             }).then(friends => {
                 const ids = friends.map(friend => friend.requesterId === existingUser.id ? friend.recipientId : friend.requesterId);
+                ids.push(existingUser.id); // Add the session user's own ID to ensure they are excluded
                 return ids;
             });                
 
@@ -141,6 +142,9 @@ router.get("/:userId", async (req, res) => {
         res.status(500).json({ error: "An error occurred while fetching user profile data." });
     }
 });
+
+
+
 
 
 router.put("/", upload.single('profile_image'),async (req, res) => {

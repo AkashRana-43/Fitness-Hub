@@ -88,7 +88,7 @@ const MemberList = () => {
                         <select className="userDropdownicon" value={userType} onChange={(e) => setUserType(e.target.value)} style={{ backgroundColor: '#F5593D'}}>
                             <option value="All">All</option>
                             <option value="trainer">Trainer</option>
-                            <option value="client">Client</option>
+                            <option value="normal">Normal</option>
                         </select>
                     </div>
                     <form className="position-relative">

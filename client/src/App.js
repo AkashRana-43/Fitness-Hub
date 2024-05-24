@@ -27,7 +27,7 @@ import NewUser from "./admin/components/pages/newUser/NewUser";
 import BulkMail from "./admin/components/pages/bulkMail/BulkMail";
 import ProfilePage from "ClientPanel/pages/ProfilePage";
 
-function App() {
+const App = () => {
   const { isLoggedIn, isAdmin } = useAuth();
 
   if (isAdmin) {
@@ -70,8 +70,10 @@ const ProfileIdWrapper = () => {
   return <ProfilePage userId={userId} />;
 }
 
-export default () => (
+const DefaultExport = () => (
   <AuthProvider>
     <App />
   </AuthProvider>
 );
+
+export default DefaultExport;
