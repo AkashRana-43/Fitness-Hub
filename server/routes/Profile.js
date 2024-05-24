@@ -6,13 +6,15 @@ const { Sequelize } = require('sequelize');
 const profile = require('../models/profile');
 
 const multer = require('multer');
+const path = require('path');
+
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
         cb(null, 'uploads/');
     },
     filename: function (req, file, cb) {
         const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-        cb(null, file.fieldname + '-' + uniqueSuffix + '.' + file.mimetype.split('/')[1]);
+        cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname));
     }
 });
 const upload = multer({ storage: storage });
@@ -172,8 +174,7 @@ router.put("/", upload.single('profile_image'), async (req, res) => {
             user_id, first_name, last_name, contact, address,
             current_height, current_weight, sex, body_type, goal_weight, goal_body_type
         } = req.body;
-        const profile_image = req.file ? req.file.path : null; // This now contains the path of the uploaded file if there is one
-
+        const profile_image = req.file ? req.file.filename : null; // This now contains of the uploaded file if there is one
         const existingUser = await Register.findOne({ where: { email: session_user.email } });
         let updating_user;
 
