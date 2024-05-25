@@ -28,7 +28,6 @@ router.get("/", async (req, res) => {
         const { session_user } = req;
         const existingUser = await Register.findOne({ where: {email : session_user.email} });
         let output = await Profile.findOne({ where: { user_id: existingUser.id } });
-        console.log(output)
         if (existingUser.user_type === "admin"){
             output = await Profile.findAll({
                 include: [{
@@ -169,6 +168,7 @@ router.put("/", upload.single('profile_image'), async (req, res) => {
         // Retrieve the session user data
         const { session_user } = req;
 
+
         // Retrieve the updated user data from the request body
         const {
             user_id, first_name, last_name, contact, address,
@@ -186,16 +186,28 @@ router.put("/", upload.single('profile_image'), async (req, res) => {
             updating_user = await Profile.findOne({ where: { user_id: user_id } });
         }
 
+
         // If the user doesn't exist, return an error
         if (!updating_user) {
             return res.status(404).json({ error: "User not found." });
         }
+
 
         // Update the user profile data
         updating_user.first_name = first_name;
         updating_user.last_name = last_name;
         updating_user.contact = contact;
         updating_user.address = address;
+        if (profile_image) {
+            updating_user.profile_image = profile_image;
+        }
+        updating_user.current_height = current_height;
+        updating_user.current_weight = current_weight;
+        updating_user.sex = sex;
+        updating_user.body_type = body_type;
+        updating_user.goal_weight = goal_weight;
+        updating_user.goal_body_type = goal_body_type;
+
         if (profile_image) {
             updating_user.profile_image = profile_image;
         }

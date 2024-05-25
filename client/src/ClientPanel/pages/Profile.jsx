@@ -15,11 +15,12 @@ const Profile = () => {
   }
 
   const {userData} = useFetch();
+  console.log("this is the data", userData)
 
   return (
     <Layout showFooter = {false}>
-      <ProfileHeader firstName={userData.first_name} userType={userData.user_type} activeTab={activeTab} onTabChange={handleTabChange}/>
-      {activeTab === "profile" ? <ProfileDescBody /> : <ProfileBody />}
+      <ProfileHeader firstName={userData.first_name} userType={userData.user_type} image= {"../../"+userData.profile_image} activeTab={activeTab} onTabChange={handleTabChange}/>
+      {activeTab === "profile" ? <ProfileDescBody userType={userData.user_type} /> : <ProfileBody />}
     </Layout>
   )
 }

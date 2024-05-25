@@ -6,7 +6,7 @@ const RegisterForm = () => {
 
     const navigate = useNavigate();
 
-    const [userType, setUserType] = useState('Trainer');
+    const [userType, setUserType] = useState('trainer');
     const [formData, setFormData] = useState({
         first_name: '',
         last_name: '',
@@ -69,10 +69,10 @@ const RegisterForm = () => {
                             <i className='bx bxs-user'></i>
                         </div>
                         <div className="dropdown">
-                            <button className="dropdown-btn" type="button">{userType === 'trainer' ? 'Trainer' : 'Client'}</button>
+                            <button className="dropdown-btn" type="button">{userType === 'trainer' ? 'Trainer' : 'Normal'}</button>
                             <div className="dropdown-content">
                                 <p onClick={() => handleOptionSelect('trainer')}>Trainer</p>
-                                <p onClick={() => handleOptionSelect('normal')}>Client</p>
+                                <p onClick={() => handleOptionSelect('normal')}>Normal</p>
                             </div>
                         </div>
                         <div className="input-box">

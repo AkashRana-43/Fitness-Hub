@@ -28,6 +28,7 @@ const LoginForm = ({handleLogin}) => {
                 localStorage.setItem('user_type', user_type);
                 
                 updateUser(response.data);
+                // console.log(response.data);
                
                 if (user_type === 'admin') {
                     navigate('/admin');

@@ -62,17 +62,18 @@ const NavbarMain = ({ isLoggedIn, handleLogout }) => {
                 maxWidth: '100%',
                 height: 'auto',
                 width: 'auto',
-                maxHeight: '100px',
+                maxHeight: '50px', // Adjust this value to make the logo smaller
                 display: 'block',
                 '@media (max-width: 768px)': {
-                  maxHeight: '80px'
+                  maxHeight: '40px' // Adjust this value for smaller screens
                 },
                 '@media (max-width: 576px)': {
-                  maxHeight: '60px'
+                  maxHeight: '30px' // Adjust this value for even smaller screens
                 }
               }}
             />
           </NavbarBrand>
+
 
 
           <button

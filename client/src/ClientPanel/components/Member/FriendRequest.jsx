@@ -13,13 +13,16 @@ const FriendRequest = () => {
     const fetchFriendRequests = async () => {
         try {
             const session = sessionStorage.getItem('session');
-            const response = await axios.get('http://localhost:3001/add_friend/requests', {
+            const response = await axios.get('http://localhost:3001/add_friend/requests/pending', {
                 headers: {
                     'session': session,
                 }
             });
             setRequesters(response.data);
             console.log('Requester:', response.data);
+
+            // Store pending friend requests in local storage
+            localStorage.setItem('pendingRequests', JSON.stringify(response.data));
         } catch (error) {
             console.error('Error fetching friend requests:', error);
         }
@@ -27,6 +30,7 @@ const FriendRequest = () => {
 
     const handleDecision = async (requesterId, action) => {
         try {
+            console.log(requesterId, action);
             const session = sessionStorage.getItem('session');
             const response = await axios.put('http://localhost:3001/add_friend/request/decision', {
                 requesterId: requesterId,
@@ -38,11 +42,21 @@ const FriendRequest = () => {
                 }
             });
             console.log(response.data.message);
-            // After successful response, update the UI by refetching friend requests
-            fetchFriendRequests();
+            
+            // Remove the requester from the state after a decision is made
+            setRequesters((prevRequesters) => prevRequesters.filter(requester => requester.user_id !== requesterId));
+            
+            // Remove pending friend request from local storage
+            const pendingRequests = JSON.parse(localStorage.getItem('pendingRequests'));
+            const updatedRequests = pendingRequests.filter(request => request.user_id !== requesterId);
+            localStorage.setItem('pendingRequests', JSON.stringify(updatedRequests));
         } catch (error) {
             console.error('Error making decision:', error);
         }
+    };
+
+    const capitalizeFirstLetter = (string) => {
+        return string.charAt(0).toUpperCase() + string.slice(1);
     };
 
     return (
@@ -53,7 +67,7 @@ const FriendRequest = () => {
                         <div className="d-sm-flex align-items-center justify-content-between mt-3 mb-4">
                             <h3 className="mb-3 mb-sm-0 fw-semibold d-flex align-items-center">Friend Request <span className="badge text-bg-secondary fs-2 rounded-4 py-1 px-2 ms-2">{requesters.length}</span></h3>
                             <form className="position-relative">
-                                <input type="text" className="form-control search-chat py-2 ps-5" id="text-srh" placeholder="Search Friends" />
+                                <input type="text" className="form-control search-chat py-2 ps-5" id="text-srh" placeholder="Search" />
                                 <i className="ti ti-search position-absolute top-50 start-0 translate-middle-y text-dark ms-3"></i>
                             </form>
                         </div>
@@ -74,17 +88,17 @@ const FriendRequest = () => {
                                         <div className="col-md-2 col-sm-2">
                                             <h5 style={{ marginBottom: 0 }}>
                                                 <a href={requester.profileLink || '#'} className="profile-link" style={{ color: '#F5593D', fontWeight: 'bold' }}>
-                                                    {requester.name}
+                                                    {requester.first_name}
                                                 </a>
                                             </h5>
-                                            <p style={{ marginBottom: 0 }}>{requester.role}</p>
+                                            <p style={{ marginBottom: 0 }}>{capitalizeFirstLetter(requester.user_type)}</p>
                                         </div>
                                         <div className="col-md-6 col-sm-6"></div>
                                         <div className="col-md-1 col-sm-1">
-                                            <button className="btn btn-primary btn-sm" onClick={() => handleDecision(requester.requesterId, 'accept')}>Accept</button>
+                                            <button className="btn btn-primary btn-sm" onClick={() => handleDecision(requester.user_id, 'accept')}>Accept</button>
                                         </div>
                                         <div className="col-md-1 col-sm-1">
-                                            <button className="btn btn-danger btn-sm" onClick={() => handleDecision(requester.requesterId, 'reject')}>Reject</button>
+                                            <button className="btn btn-danger btn-sm" onClick={() => handleDecision(requester.user_id, 'reject')}>Reject</button>
                                         </div>
                                     </div>
                                 </div>
