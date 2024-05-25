@@ -1,20 +1,21 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { DataGrid } from '@mui/x-data-grid';
 import { DeleteOutline } from '@mui/icons-material';
 import { Link } from 'react-router-dom';
 import './css/ProfilePage.css';
 
-const AssignModal = ({ show, onHide, userID }) => {
+const AssignModal = ({ show, onHide, userID, onStatusUpdate }) => {
   // You can potentially use userId to filter or customize the data displayed in the modal
 
   console.log(show);
-  console.log(`This is  userId: ${userID}`);
+  
 
 
   const [dietData, setDietData] = useState([]);
   const sessionId = sessionStorage.getItem('session');
   const getRowId = (row) => row.id || row.title;  // Use existing ID if available, otherwise use title as fallback
   const [selectedIds, setSelectedIds] = useState([]);
+  
 
 
   const handleDelete = (id) => {
@@ -30,7 +31,7 @@ const AssignModal = ({ show, onHide, userID }) => {
           alert('Diet entry deleted successfully'); // Show an alert indicating that the diet entry has been deleted
           // Remove the deleted row from the state
           setDietData(prevData => prevData.filter(row => row.id !== id));
-          
+
         } else {
           alert('Failed to delete diet'); // Show an alert indicating that the deletion failed
           // Optionally, handle the error or show an error message
@@ -93,35 +94,53 @@ const AssignModal = ({ show, onHide, userID }) => {
       })
       .catch(error => console.error('Error fetching users:', error));
   }, []);
-  const handleAssignDiets = () => {
-    
+  const handleAssignDiets = (requestID) => {
+
 
     // Construct the diet data object
     const assignDiet = {
-        dietIds: selectedIds,
-        userId:2
-        
+      dietIds: selectedIds,
+      userId: userID
+
     };
 
-  // Send a POST request to assign the diets data
-  fetch('http://localhost:3001/diet/assign_diets', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'session': `${sessionId}`
-    },
-    body: JSON.stringify({ ...assignDiet})
-  })
-    .then(res => res.json())
-    .then(data => {
-      
-      alert('Diet assigned. Check email');
-      onHide();
-
+    // Send a POST request to assign the diets data
+    fetch('http://localhost:3001/diet/assign_diets', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'session': `${sessionId}`
+      },
+      body: JSON.stringify({ ...assignDiet })
     })
-    .catch(err => console.log(err));
+      .then(res => res.json())
+      .then(data => {
+
+        alert('Diet assigned. Check email');
+        // Call the status update API
+        return fetch(`http://localhost:3001/request/status/${requestID}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'session': `${sessionId}`
+          },
+          
+        });
+      })
+      .then(response => response.json())
+      .then(statusData => {
+        // Update the status in the parent component
+        console.log("Status updated");
+        console.log(statusData);
+        onStatusUpdate(userID);
+        
+        onHide();
+      })
+      .catch(err => console.log(err));
 
   }
+
+  
 
 
 
@@ -151,6 +170,7 @@ const AssignModal = ({ show, onHide, userID }) => {
               onRowSelectionModelChange={(newSelection) => {
                 setSelectedIds(newSelection);
                 console.log('Selected IDs:', newSelection);
+                
               }}
             />
           </div>
@@ -160,10 +180,10 @@ const AssignModal = ({ show, onHide, userID }) => {
             </button>
             <button type="submit" className="btn btn-primary" onClick={() => {
               console.log('Saved selected IDs:', selectedIds);
-              handleAssignDiets()
-              
+              handleAssignDiets(userID)
+              console.log(`This is  userId: ${userID}`);
             }}>
-              Save changes
+              Submit
             </button>
           </div>
         </div>

@@ -118,3 +118,12 @@ a {
     max-width: 900px;
 }
 
+.btn-primary {
+    background-color: #f5593d;
+    border-color: #f5593d;
+}
+.btn-primary:hover {
+    background-color: #e74d32;
+    border-color: #e74d32;
+}
+

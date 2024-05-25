@@ -1,25 +1,22 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { DataGrid } from '@mui/x-data-grid';
 import AssignModal from './AssignModal';
-
+import CheckCircle from '@mui/icons-material/CheckCircle';
 const ProfileDescBody = () => {
 
     const [showAssignModal, setShowAssignModal] = useState(false); // State for modal visibility
     const [selectedUserId, setSelectedUserId] = useState(null); // State to store selected user ID
-
+    const [requestDietData, setrequestDietData] = useState([]);
+    const sessionId = sessionStorage.getItem('session');
     
-    const usersData = [
-        { id: 1, requested_by: 'John', requested_to: '+1234567890', message: '123 Main St', status: 'Decrease Fat' },
-        { id: 2, requested_by: 'Jane', requested_to: '+9876543210', message: '456 Elm St', status: 'Gain weight' },
-        { id: 3, requested_by: 'Mike', requested_to: '+0123456789', message: '789 Oak Ave', status: 'Keto diet' },
-      ];
     
       const columns = [
         { field: 'id', headerName: 'ID', width: 70 },
         { field: 'requested_by', headerName: 'Requested By', width: 150 },
-        { field: 'requested_to', headerName: 'Requested To', width: 150 },
+        { field: 'profile_name', headerName: 'Profile', width: 150 },
         { field: 'message', headerName: 'Message', width: 250 },
-        { field: 'status', headerName: 'Status', width: 200 },
+        { field: 'status', headerName: 'Status', width: 150, 
+        renderCell: (params) => (params.value ? <CheckCircle style={{ color: '#f5593d', fontSize:'25px' }}/> : 'Not assigned') }, //params.value gets the value of current row which is status = true || false
         {
           field: 'actions',
           headerName: 'Action',
@@ -45,6 +42,34 @@ const ProfileDescBody = () => {
       // };
       console.log(showAssignModal);
       console.log(`userId: ${selectedUserId}`)
+
+      useEffect(() => {
+        fetch('http://localhost:3001/request/diets/', {
+          method: 'GET',
+          headers: {
+            'session': `${sessionId}`,
+          },
+        })
+          .then(response => response.json())
+          .then(data => {
+    
+            // Ensure data is an array of objects
+            if (Array.isArray(data)) {
+              setrequestDietData(data);
+            } else {
+              console.error('Received data is not an array:', data);
+            }
+          })
+          .catch(error => console.error('Error fetching users:', error));
+      }, []);
+
+      const updateStatus = (userId) => {
+        setrequestDietData(prevData =>
+            prevData.map(item =>
+                item.id === userId ? { ...item, status: '✔️' } : item
+            )
+        );
+    };
      
 
       
@@ -60,7 +85,7 @@ const ProfileDescBody = () => {
                     </div>
                     <div className="requestDietTable">
                             <DataGrid
-                                rows={usersData}
+                                rows={requestDietData}
                                 columns={columns}
                                 pageSize={10}
                                 rowsPerPageOptions={[5, 10, 20]}
@@ -71,7 +96,8 @@ const ProfileDescBody = () => {
                                 <AssignModal
                                 show={showAssignModal} // Pass modal visibility state
                                 onHide={() => setShowAssignModal(false)}
-                                userID = {selectedUserId} /> )}
+                                userID = {selectedUserId}
+                                onStatusUpdate={updateStatus} /> )}
                             
                         </div>
                        
