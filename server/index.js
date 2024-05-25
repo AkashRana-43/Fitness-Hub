@@ -8,7 +8,10 @@ const router = express.Router();
 
 app.use(cookieParser());
 app.use(express.json());
-app.use(cors());
+app.use(cors({
+  origin: 'http://localhost:3000'
+}));
+
 
 const db = require("./models");
 
@@ -23,6 +26,7 @@ const logoutRouter = require("./routes/Sign_out");
 const addfriendRouter = require("./routes/Add_friends");
 const bulkMessageRouter = require("./routes/Bulk_message");
 const dietRouter = require("./routes/Diet");
+const requestDietRouter = require("./routes/Request_diet");
 
 
 app.use("/register", registerRouter);
@@ -36,6 +40,7 @@ app.use("/verify",loginRouter);
 app.use("/bulk_email",checkSessionExpiration, bulkMessageRouter);
 app.use("/diet",checkSessionExpiration, dietRouter);
 app.use('/uploads', express.static('uploads'));
+app.use('/request',checkSessionExpiration, requestDietRouter);
 
  db.sequelize.sync().then(() =>{
    app.listen(3001, () => {
