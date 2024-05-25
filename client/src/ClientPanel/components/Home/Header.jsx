@@ -8,17 +8,17 @@ const Header = () => {
                 className="page-header section-dark"
                 style={{
                     backgroundImage:
-                        "url(" + require('../../assets/img/bg/BG.jpg') + ")",
+                        "url(" + require('../../assets/img/bg/BGG.jpg') + ")",
                 }}
             >
                 <div className="filter" />
                 <div className="content-center">
                     <Container>
                         <div className="title-brand">
-                            <h1 className="presentation-title"><span className='title-front'>FIT</span>ness <br/> <span className='title-front'>HUB</span></h1>
+                            <h1 className="presentation-title"><span className='title-front'>FITNESS </span><br/> <span className='title-front'>HUB</span></h1>
                         </div>
                         <h2 className="presentation-subtitle text-center">
-                           Let's be fit...Join Us
+                            "Through every lift and every stride, the bond between trainer and gym lover grows stronger, forging a path of strength and determination."
                         </h2>
                     </Container>
                 </div>

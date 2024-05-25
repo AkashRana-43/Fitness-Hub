@@ -10,10 +10,8 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     const session = sessionStorage.getItem('session');
-    const userType = localStorage.getItem('user_type');
+    const userType = localStorage.getItem('userType');
     const expiry = sessionStorage.getItem('expiry'); // Get expiry from sessionStorage
-
-    console.log("Session:", session, "User Type:", userType, "Expiry:", expiry);
 
     if (session && expiry && Date.now() < parseInt(expiry, 10)) {
       setIsLoggedIn(true);
@@ -22,9 +20,7 @@ export const AuthProvider = ({ children }) => {
 
     if (userType) {
       setUserType(userType);
-      if (userType === 'admin') {
-        setIsAdmin(true);
-      }
+      setIsAdmin(userType === 'admin');
     }
   }, []);
 
@@ -35,13 +31,12 @@ export const AuthProvider = ({ children }) => {
   const handleLogin = useCallback((userData) => {
     setIsLoggedIn(true);
     setUserType(userData.user_type);
-    if (userData.user_type === 'admin') {
-      setIsAdmin(true);
-    }
-    setExpiry(userData.expiry); // Set expiry in state
+    setIsAdmin(userData.user_type === 'admin');
+    const expiryTime = Date.now() + 15 * 60 * 1000;
+    setExpiry(expiryTime); // Set expiry in state
     sessionStorage.setItem('session', userData.session);
-    localStorage.setItem('user_type', userData.user_type);
-    sessionStorage.setItem('expiry', userData.expiry); // Store expiry in sessionStorage
+    localStorage.setItem('userType', userData.user_type);
+    sessionStorage.setItem('expiry', expiryTime); // Store expiry in sessionStorage
     navigate('/');
   }, [navigate]);
 
@@ -50,7 +45,7 @@ export const AuthProvider = ({ children }) => {
     setIsAdmin(false);
     setUserType(null);
     sessionStorage.removeItem('session');
-    localStorage.removeItem('user_type');
+    localStorage.removeItem('userType');
     sessionStorage.removeItem('expiry'); // Remove expiry from sessionStorage
     navigate('/');
   }, [navigate]);
@@ -60,13 +55,11 @@ export const AuthProvider = ({ children }) => {
     const interval = setInterval(() => {
       if (expiry && Date.now() > expiry) {
         handleLogout();
-        sessionStorage.removeItem('session');
-        localStorage.removeItem('user_type');
       }
     }, 60000);
 
     return () => clearInterval(interval);
-  }, [expiry, handleLogout]); 
+  }, [expiry, handleLogout]);
 
   return (
     <AuthContext.Provider value={{ isLoggedIn, isAdmin, userType, handleLogin, handleLogout, navigate }}>

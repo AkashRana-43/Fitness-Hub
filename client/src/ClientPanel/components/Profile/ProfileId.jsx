@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './css/ProfilePage.css';
 import Img1 from '../../assets/img/bg/BG.jpg';
+import defaultImage from '../../uploads/logo.PNG';
 
 const ProfileId = ({ userId }) => {
     const [user, setUser] = useState(null);
@@ -31,10 +32,10 @@ const ProfileId = ({ userId }) => {
         const session = sessionStorage.getItem('session');
         const requestData = {
             requested_to: userId,
-            message: document.getElementById('Request').value 
+            message: document.getElementById('Request').value
         };
         console.log(requestData);
-    
+
         try {
             const response = await fetch('http://localhost:3001/diet/submitRequest', {
                 method: 'POST',
@@ -44,18 +45,18 @@ const ProfileId = ({ userId }) => {
                 },
                 body: JSON.stringify(requestData)
             });
-    
+
             if (!response.ok) {
                 throw new Error('Request failed with status: ' + response.status);
             }
-    
+
             console.log('Request submitted successfully');
 
         } catch (error) {
             console.error('Error submitting request:', error.message);
         }
     };
-    
+
     useEffect(() => {
         const session = sessionStorage.getItem('session');
         axios.get(`http://localhost:3001/profile/${userId}`, {
@@ -78,6 +79,8 @@ const ProfileId = ({ userId }) => {
 
     const userType = user.user.user_type;
 
+    const imagePath = user.profile_image ? require(`../../uploads/${user.profile_image}`) : defaultImage;
+
     const renderButton = () => {
         if (loggedInUserType === 'normal') { // Check if the logged-in user's type is 'normal'
             if (userType === 'trainer') {
@@ -94,7 +97,7 @@ const ProfileId = ({ userId }) => {
     };
 
     const renderProfile = () => {
-        if (loggedInUserType === 'normal') {
+        if (loggedInUserType === 'normal' || loggedInUserType === 'trainer') {
             if (userType === 'trainer') {
                 return null;
             } else if (userType === 'normal') {
@@ -107,57 +110,58 @@ const ProfileId = ({ userId }) => {
                                     <div className="row mb-2">
                                         <div className="col-md-3 text-muted">Height:</div>
                                         <div className="col-md-9">
-                                            167 cm
+                                            {user.current_height || "-------"} cm
                                         </div>
                                     </div>
                                     <div className="row mb-2">
                                         <div className="col-md-3 text-muted">Weight:</div>
                                         <div className="col-md-9">
-                                            70 kg
+                                            {user.current_weight || "-------"} kg
                                         </div>
                                     </div>
                                     <div className="row mb-2">
                                         <div className="col-md-3 text-muted">Sex:</div>
                                         <div className="col-md-9">
-                                            Female
+                                            {user.sex || "-------"}
                                         </div>
                                     </div>
                                     <div className="row mb-2">
                                         <div className="col-md-3 text-muted">Body Type:</div>
                                         <div className="col-md-9">
-                                            Fat
+                                            {user.body_type || "-------"}
                                         </div>
                                     </div>
                                     <h6 className="my-3">Contacts</h6>
                                     <div className="row mb-2">
                                         <div className="col-md-3 text-muted">Phone:</div>
                                         <div className="col-md-9">
-                                            +61 (04)45 678 910
+                                            {user.contact || "-------"}
                                         </div>
                                     </div>
                                     <div className="row mb-2">
                                         <div className="col-md-3 text-muted">Address:</div>
                                         <div className="col-md-9">
-                                            1 Argyle street, Prospect SA
+                                            {user.address || "-------"}
                                         </div>
                                     </div>
                                     <h6 className="my-3">Goal</h6>
                                     <div className="row mb-2">
                                         <div className="col-md-3 text-muted">Weight:</div>
                                         <div className="col-md-9">
-                                            50 kg
+                                            {user.goal_weight || "-------"} kg
                                         </div>
                                     </div>
                                     <div className="row mb-2">
                                         <div className="col-md-3 text-muted">Body Type:</div>
                                         <div className="col-md-9">
-                                            Moderate
+                                            {user.goal_body_type || "-------"}
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
+
                 );
             }
         }
@@ -185,7 +189,7 @@ const ProfileId = ({ userId }) => {
                             <div className="d-flex align-items-center justify-content-center mb-2">
                                 <div className="linear-gradient d-flex align-items-center justify-content-center rounded-circle" style={{ width: '110px', height: '110px' }}>
                                     <div className="border border-4 border-white d-flex align-items-center justify-content-center rounded-circle overflow-hidden" style={{ width: '100px', height: '100px' }}>
-                                        <img src={Img1} alt="" className="w-100 h-100" />
+                                        <img src={imagePath} alt='' className="w-100 h-100" />
                                     </div>
                                 </div>
                             </div>
@@ -218,7 +222,7 @@ const ProfileId = ({ userId }) => {
 
                     {renderButton()}
                 </div>
-                <div style={{ paddingTop: '20px' }}>
+                <div style={{ padding: '60px' }}>
                     {renderProfile()}
                 </div>
 

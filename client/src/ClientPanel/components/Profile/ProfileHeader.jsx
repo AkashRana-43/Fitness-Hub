@@ -1,10 +1,28 @@
 import React, { useState } from 'react';
 import './css/ProfilePage.css';
 import Img1 from '../../assets/img/bg/BG.jpg';
-import Img2 from "../../uploads/profile_image-1716529835662-721988039.jpeg"
 import './css/ProfileEditForm.css';
 
 const ProfileHeader = ({ firstName, userType, activeTab, onTabChange, image }) => {
+
+    const renderButton = () => {
+        if ( userType === 'trainer' ) {
+            return (
+                <div className="col-lg-4 order-last text-center">
+                    <button className="btn mx-4" style={{ backgroundColor: "#F5593D", color: "white", border: 'none' }}>Edit Profile</button>
+                    <button className="btn mx-4" style={{ backgroundColor: "#F5593D", color: "white", border: 'none' }}>Request Diet</button>
+                </div>
+            );
+        } else if (userType === 'normal') {
+            return (
+                <div className="col-lg-4 order-last text-center">
+                    <button className="btn mx-4" style={{ backgroundColor: "#F5593D", color: "white", border: 'none' }} onClick={togglePopup}>Edit Profile</button>
+                </div>
+            );
+        }
+        return null;
+    };
+
     const [formData, setFormData] = useState({
         first_name: '',
         last_name: '',
@@ -99,8 +117,8 @@ const ProfileHeader = ({ firstName, userType, activeTab, onTabChange, image }) =
                             <div className="d-flex align-items-center justify-content-center mb-2">
                                 <div className="linear-gradient d-flex align-items-center justify-content-center rounded-circle" style={{ width: '110px', height: '110px' }}>
                                     <div className="border border-4 border-white d-flex align-items-center justify-content-center rounded-circle overflow-hidden" style={{ width: '100px', height: '100px' }}>
-                                        <img src={Img2} alt="" className="w-100 h-100" />
-                                        <img src={image} alt="" className="w-100 h-100" />
+                                        
+                                        <img src={image} alt="" className="w-100 h-100" style={{ objectFit: 'cover' }} />
                                     </div>
                                 </div>
                             </div>
@@ -110,9 +128,7 @@ const ProfileHeader = ({ firstName, userType, activeTab, onTabChange, image }) =
                             </div>
                         </div>
                     </div>
-                    <div className="col-lg-4 order-last text-center">
-                        <button className="btn mx-4" style={{ backgroundColor: "#F5593D", color: "white", border: 'none' }} onClick={togglePopup}>Edit Profile</button>
-                    </div>
+                    {renderButton()}
                 </div>
             </section>
             <div style={{ padding: '20px 40%' }}>

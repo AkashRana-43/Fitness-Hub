@@ -90,7 +90,10 @@ const ProfileDescBody = ({ userType }) => {
                     </div>
                 </div>
             );
+        }else if(userType === 'trainer'){
+            return null; // Mingmar add here.......
         }
+
 
     };
 
