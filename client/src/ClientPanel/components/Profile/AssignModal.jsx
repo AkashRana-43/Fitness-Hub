@@ -28,7 +28,9 @@ const AssignModal = ({ show, onHide, userID }) => {
       .then(response => {
         if (response.ok) {
           alert('Diet entry deleted successfully'); // Show an alert indicating that the diet entry has been deleted
-
+          // Remove the deleted row from the state
+          setDietData(prevData => prevData.filter(row => row.id !== id));
+          
         } else {
           alert('Failed to delete diet'); // Show an alert indicating that the deletion failed
           // Optionally, handle the error or show an error message
