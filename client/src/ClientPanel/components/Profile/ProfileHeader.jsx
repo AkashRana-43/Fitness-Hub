@@ -5,12 +5,79 @@ import './css/ProfileEditForm.css';
 
 const ProfileHeader = ({ firstName, userType, activeTab, onTabChange, image }) => {
 
+    const [showModal, setShowModal] = useState(false);
+    const [title, setTitle] = useState('');
+    const [mealName, setMealName] = useState('');
+    const [mealType, setMealType] = useState('');
+    const [description, setDescription] = useState('');
+    const [calories, setCaloreis] = useState('');
+    const [protein, setProtein] = useState('');
+    const [carbohydrates, setCarbohydrates] = useState('');
+    const [fat, setFat] = useState('');
+    const [fiber, setFiber] = useState('');
+
+
+    const handleShow = () => setShowModal(true);
+    const handleClose = () => setShowModal(false);
+
+    const userTypes = localStorage.getItem('user_type');
+
+    const isTrainer = userTypes === 'trainer';
+
+    const handleSubmitDiet = (event) => {
+        event.preventDefault();
+        const createDiet = {
+            title: title,
+            meal_name: mealName,
+            meal_type: mealType,
+            description: description,
+            calories: calories,
+            protein: protein,
+            carbohydrates: carbohydrates,
+            fat: fat,
+            fiber: fiber
+        };
+        console.log(JSON.stringify(createDiet));
+        if (!isTrainer) {
+            console.error('Only trainers can create diet entries');
+            return;
+        }
+
+
+        const sessionId = sessionStorage.getItem('session');
+        console.log(sessionId);
+        fetch('http://localhost:3001/diet/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'session': sessionId  // Replace with actual session ID
+            },
+            body: JSON.stringify(createDiet)
+
+        })
+
+            .then(res => {
+                if (!res.ok) {
+                    throw new Error(`HTTP error! status: ${res.status}`);
+                }
+                return res.json();
+            })
+            .then(data => {
+                console.log('Success:', data); // Log the response data
+                alert('Data saved successfully!');
+                handleClose();
+
+            })
+            .catch(err => console.log(err));
+
+    };
+
     const renderButton = () => {
-        if ( userType === 'trainer' ) {
+        if (userType === 'trainer') {
             return (
                 <div className="col-lg-4 order-last text-center">
                     <button className="btn mx-4" style={{ backgroundColor: "#F5593D", color: "white", border: 'none' }}>Edit Profile</button>
-                    <button className="btn mx-4" style={{ backgroundColor: "#F5593D", color: "white", border: 'none' }}>Request Diet</button>
+                    <button className="btn mx-4" style={{ backgroundColor: "#F5593D", color: "white", border: 'none' }} onClick={handleShow}>Create Diet</button>
                 </div>
             );
         } else if (userType === 'normal') {
@@ -58,14 +125,14 @@ const ProfileHeader = ({ firstName, userType, activeTab, onTabChange, image }) =
     const handleSubmit = async (e) => {
         e.preventDefault();
         togglePopup();
-    
+
         const session = sessionStorage.getItem('session');
         try {
             const formDataToSend = new FormData();
             for (const key in formData) {
                 formDataToSend.append(key, formData[key]);
             }
-    
+
             const response = await fetch('http://localhost:3001/profile', {
                 method: 'PUT',
                 headers: {
@@ -73,7 +140,7 @@ const ProfileHeader = ({ firstName, userType, activeTab, onTabChange, image }) =
                 },
                 body: formDataToSend
             });
-    
+
             if (response.ok) {
                 console.log('Profile updated successfully');
                 // Fetch updated user data and update state
@@ -86,7 +153,7 @@ const ProfileHeader = ({ firstName, userType, activeTab, onTabChange, image }) =
             console.error('Error:', error);
         }
     };
-    
+
 
     const capitalizeFirstLetter = (string) => {
         return string.charAt(0).toUpperCase() + string.slice(1);
@@ -117,7 +184,7 @@ const ProfileHeader = ({ firstName, userType, activeTab, onTabChange, image }) =
                             <div className="d-flex align-items-center justify-content-center mb-2">
                                 <div className="linear-gradient d-flex align-items-center justify-content-center rounded-circle" style={{ width: '110px', height: '110px' }}>
                                     <div className="border border-4 border-white d-flex align-items-center justify-content-center rounded-circle overflow-hidden" style={{ width: '100px', height: '100px' }}>
-                                        
+
                                         <img src={image} alt="" className="w-100 h-100" style={{ objectFit: 'cover' }} />
                                     </div>
                                 </div>
@@ -228,6 +295,107 @@ const ProfileHeader = ({ firstName, userType, activeTab, onTabChange, image }) =
                             </div>
                             <button type="submit" className="btn" style={{ backgroundColor: "#F5593D", color: "white", border: 'none' }}>Edit</button>
                         </form>
+                    </div>
+                </div>
+            )}
+
+            {showModal && isTrainer && (
+                <div className="modal show d-block" tabIndex="-1">
+                    <div className="modal-dialog">
+                        <div className="modal-content">
+                            <div className="modal-header">
+                                <h5 className="modal-title">Create Diet</h5>
+
+                                <button type="button" className="btn-close" aria-label="Close" onClick={handleClose}></button>
+                            </div>
+
+                            <div className="modal-body">
+                                <form onSubmit={handleSubmitDiet}>
+                                    <div className="mb-3">
+                                        <label className="form-label">Title</label>
+                                        <input
+                                            type="text"
+                                            className="form-control"
+                                            id="exampleInputText"
+                                            value={title}
+                                            onChange={(event) => setTitle(event.target.value)}
+                                        />
+                                        <label className="form-label">Meal Name</label>
+                                        <input
+                                            type="text"
+                                            className="form-control"
+                                            id="exampleInputText"
+                                            value={mealName}
+                                            onChange={(event) => setMealName(event.target.value)}
+                                        />
+                                        <label className="form-label">Meal Type</label>
+                                        <input
+                                            type="text"
+                                            className="form-control"
+                                            id="exampleInputText"
+                                            value={mealType}
+                                            onChange={(event) => setMealType(event.target.value)}
+                                        />
+                                        <label className="form-label">Description</label>
+                                        <input
+                                            type="text"
+                                            className="form-control"
+                                            id="exampleInputText"
+                                            value={description}
+                                            onChange={(event) => setDescription(event.target.value)}
+                                        />
+                                        <label className="form-label">Calories</label>
+                                        <input
+                                            type="text"
+                                            className="form-control"
+                                            id="exampleInputText"
+                                            value={calories}
+                                            onChange={(event) => setCaloreis(event.target.value)}
+                                        />
+                                        <label className="form-label">Protein</label>
+                                        <input
+                                            type="text"
+                                            className="form-control"
+                                            id="exampleInputText"
+                                            value={protein}
+                                            onChange={(event) => setProtein(event.target.value)}
+                                        />
+                                        <label className="form-label">Carbs</label>
+                                        <input
+                                            type="text"
+                                            className="form-control"
+                                            id="exampleInputText"
+                                            value={carbohydrates}
+                                            onChange={(event) => setCarbohydrates(event.target.value)}
+                                        />
+                                        <label className="form-label">Fat</label>
+                                        <input
+                                            type="text"
+                                            className="form-control"
+                                            id="exampleInputText"
+                                            value={fat}
+                                            onChange={(event) => setFat(event.target.value)}
+                                        />
+                                        <label className="form-label">Fiber</label>
+                                        <input
+                                            type="text"
+                                            className="form-control"
+                                            id="exampleInputText"
+                                            value={fiber}
+                                            onChange={(event) => setFiber(event.target.value)}
+                                        />
+                                    </div>
+                                    <div className="modal-footer">
+                                        <button type="button" className="btn btn-secondary" onClick={handleClose}>
+                                            Close
+                                        </button>
+                                        <button type="submit" className="btn btn-primary">
+                                            Save changes
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
                     </div>
                 </div>
             )}

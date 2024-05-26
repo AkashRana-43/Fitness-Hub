@@ -1,16 +1,49 @@
 import React, { useEffect, useState } from 'react';
+import { DataGrid } from '@mui/x-data-grid';
+import AssignModal from './AssignModal';
+import CheckCircle from '@mui/icons-material/CheckCircle';
 
 const ProfileDescBody = ({ userType }) => {
-    const [profileData, setProfileData] = useState(null); // State to store profile data
+    console.log(userType);
+    const [profileData, setProfileData] = useState(null);
+    const [showAssignModal, setShowAssignModal] = useState(false);
+    const [selectedUserId, setSelectedUserId] = useState(null);
+    const [requestDietData, setrequestDietData] = useState([]);
+
+    const columns = [
+        { field: 'id', headerName: 'ID', width: 70 },
+        { field: 'requested_by', headerName: 'Requested By', width: 150 },
+        { field: 'profile_name', headerName: 'Profile', width: 150 },
+        { field: 'message', headerName: 'Message', width: 250 },
+        {
+            field: 'status', headerName: 'Status', width: 150,
+            renderCell: (params) => (params.value ? <CheckCircle style={{ color: '#f5593d', fontSize: '25px' }} /> : 'Not assigned')
+        },
+        {
+            field: 'actions',
+            headerName: 'Action',
+            width: 100,
+            renderCell: (params) => (
+                <button
+                    className="btn btn-sm btn-primary"
+                    onClick={() => {
+                        setSelectedUserId(params.row.id);
+                        setShowAssignModal(true);
+                    }}
+                >
+                    Assign
+                </button>
+            ),
+        },
+    ];
 
     useEffect(() => {
-        // Fetch profile data from the API
         const session = sessionStorage.getItem('session');
-        fetch('http://localhost:3001/profile',{
+        fetch('http://localhost:3001/profile', {
             method: 'GET',
-                headers: {
-                    'session': session,
-                },
+            headers: {
+                'session': session,
+            },
         })
             .then(response => {
                 if (!response.ok) {
@@ -19,20 +52,46 @@ const ProfileDescBody = ({ userType }) => {
                 return response.json();
             })
             .then(data => {
-                setProfileData(data); // Update profile data state with fetched data
+                setProfileData(data);
             })
             .catch(error => {
                 console.error('Error fetching profile data:', error);
             });
-    }, []); // Empty dependency array ensures the effect runs only once after the component mounts
+    }, []);
 
-    // Define a function to render the profile details
+    useEffect(() => {
+        const session = sessionStorage.getItem('session');
+        fetch('http://localhost:3001/request/diets/', {
+            method: 'GET',
+            headers: {
+                'session': session,
+            },
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (Array.isArray(data)) {
+                    setrequestDietData(data);
+                } else {
+                    console.error('Received data is not an array:', data);
+                }
+            })
+            .catch(error => console.error('Error fetching users:', error));
+    }, []);
+
+    const updateStatus = (userId) => {
+        setrequestDietData(prevData =>
+            prevData.map(item =>
+                item.id === userId ? { ...item, status: '✔️' } : item
+            )
+        );
+    };
+
     const renderProfileDetails = () => {
         if (!profileData) {
-            return <p>Loading...</p>; // Show loading message while fetching data
+            return <p>Loading...</p>;
         }
 
-        if (userType === 'normal'){
+        if (userType === 'normal') {
             return (
                 <div className="card mb-4">
                     <div className="card-body">
@@ -90,11 +149,30 @@ const ProfileDescBody = ({ userType }) => {
                     </div>
                 </div>
             );
-        }else if(userType === 'trainer'){
-            return null; // Mingmar add here.......
+        } else if (userType === 'trainer') {
+            return (
+                <div className="requestDietTable">
+                    <DataGrid
+                        rows={requestDietData}
+                        columns={columns}
+                        pageSize={10}
+                        rowsPerPageOptions={[5, 10, 20]}
+                        autoHeight
+                        disableRowSelectionOnClick
+                    />
+                    {showAssignModal && (
+                        <AssignModal
+                            show={showAssignModal}
+                            onHide={() => setShowAssignModal(false)}
+                            userID={selectedUserId}
+                            onStatusUpdate={updateStatus}
+                        />
+                    )}
+                </div>
+            );
+        } else {
+            return null;
         }
-
-
     };
 
     return (
