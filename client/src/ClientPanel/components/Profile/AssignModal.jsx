@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { DataGrid } from '@mui/x-data-grid';
 import { DeleteOutline } from '@mui/icons-material';
-import { Link } from 'react-router-dom';
+import EditModal from './EditModal'; // Import the EditModal component
+
 import './css/ProfilePage.css';
 
 const AssignModal = ({ show, onHide, userID, onStatusUpdate }) => {
@@ -12,11 +13,17 @@ const AssignModal = ({ show, onHide, userID, onStatusUpdate }) => {
 
 
   const [dietData, setDietData] = useState([]);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editData, setEditData] = useState(null);
   const sessionId = sessionStorage.getItem('session');
   const getRowId = (row) => row.id || row.title;  // Use existing ID if available, otherwise use title as fallback
   const [selectedIds, setSelectedIds] = useState([]);
   
 
+  const handleEdit = (row) => {
+    setEditData(row);
+    setShowEditModal(true);
+  };
 
   const handleDelete = (id) => {
     fetch(`http://localhost:3001/diet/${id}`, {
@@ -59,10 +66,12 @@ const AssignModal = ({ show, onHide, userID, onStatusUpdate }) => {
       renderCell: (params) => {
         return (
           <div className="userListAction">
-            <Link to={"/" + params.row.user_id}>
+            
 
-              <button className="btn" style={{ backgroundColor: "#F5593D", color: "white", border: 'none' }}>Edit</button>
-            </Link>
+              <button className="btn" 
+              style={{ backgroundColor: "#F5593D", color: "white", border: 'none' }}
+              onClick={() => handleEdit(params.row)}>Edit</button>
+            
 
             <DeleteOutline className="userListDelete" onClick={() => handleDelete(params.row.id)} />
 
@@ -173,6 +182,13 @@ const AssignModal = ({ show, onHide, userID, onStatusUpdate }) => {
                 
               }}
             />
+             {showEditModal && (
+              <EditModal
+                showEdit={showEditModal}
+                onHideEdit={() => setShowEditModal(false)}
+                editData={editData}
+              />
+            )}
           </div>
           <div className="modal-footer">
             <button type="button" className="btn btn-secondary" onClick={onHide}>
