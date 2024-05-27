@@ -1,4 +1,5 @@
 import React, { createContext, useState, useEffect, useContext, useCallback } from 'react';
+import { useNavigate } from "react-router-dom";
 
 const AuthContext = createContext();
 
@@ -6,12 +7,13 @@ export const AuthProvider = ({ children }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const [userType, setUserType] = useState(null);
-  const [expiry, setExpiry] = useState(null); // Store session expiry
+  const [expiry, setExpiry] = useState(null);
+  const navigate = useNavigate(); // Using useNavigate for navigation
 
   useEffect(() => {
     const session = sessionStorage.getItem('session');
-    const userType = localStorage.getItem('userType');
-    const expiry = sessionStorage.getItem('expiry'); // Get expiry from sessionStorage
+    const userType = localStorage.getItem('user_type');
+    const expiry = sessionStorage.getItem('expiry');
 
     if (session && expiry && Date.now() < parseInt(expiry, 10)) {
       setIsLoggedIn(true);
@@ -20,12 +22,8 @@ export const AuthProvider = ({ children }) => {
 
     if (userType) {
       setUserType(userType);
-      setIsAdmin(userType === 'admin');
+      setIsAdmin(true);
     }
-  }, []);
-
-  const navigate = useCallback((path) => {
-    window.location.href = path;
   }, []);
 
   const handleLogin = useCallback((userData) => {
@@ -33,10 +31,10 @@ export const AuthProvider = ({ children }) => {
     setUserType(userData.user_type);
     setIsAdmin(userData.user_type === 'admin');
     const expiryTime = Date.now() + 15 * 60 * 1000;
-    setExpiry(expiryTime); // Set expiry in state
+    setExpiry(expiryTime);
     sessionStorage.setItem('session', userData.session);
-    localStorage.setItem('userType', userData.user_type);
-    sessionStorage.setItem('expiry', expiryTime); // Store expiry in sessionStorage
+    localStorage.setItem('user_type', userData.user_type);
+    sessionStorage.setItem('expiry', expiryTime);
     navigate('/');
   }, [navigate]);
 
@@ -45,13 +43,12 @@ export const AuthProvider = ({ children }) => {
     setIsAdmin(false);
     setUserType(null);
     sessionStorage.removeItem('session');
-    localStorage.removeItem('userType');
-    sessionStorage.removeItem('expiry'); // Remove expiry from sessionStorage
+    localStorage.removeItem('user_type');
+    sessionStorage.removeItem('expiry');
     navigate('/');
   }, [navigate]);
 
   useEffect(() => {
-    // Check session expiry every minute
     const interval = setInterval(() => {
       if (expiry && Date.now() > expiry) {
         handleLogout();
@@ -62,10 +59,12 @@ export const AuthProvider = ({ children }) => {
   }, [expiry, handleLogout]);
 
   return (
-    <AuthContext.Provider value={{ isLoggedIn, isAdmin, userType, handleLogin, handleLogout, navigate }}>
+    <AuthContext.Provider value={{ isLoggedIn, isAdmin, userType, handleLogin, handleLogout }}>
       {children}
     </AuthContext.Provider>
   );
 };
 
 export const useAuth = () => useContext(AuthContext);
+
+

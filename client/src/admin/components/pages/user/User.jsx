@@ -1,6 +1,5 @@
 import "./user.css";
-// import axios from 'axios';
-import { Link, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { useState } from 'react';
 import {CalendarToday, LocationSearching, MailLockOutlined, PermIdentity, PhoneAndroid, Publish} from '@mui/icons-material';
 export default function User() {
