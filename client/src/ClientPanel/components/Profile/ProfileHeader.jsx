@@ -76,7 +76,6 @@ const ProfileHeader = ({ firstName, userType, activeTab, onTabChange, image }) =
         if (userType === 'trainer') {
             return (
                 <div className="col-lg-4 order-last text-center">
-                    <button className="btn mx-4" style={{ backgroundColor: "#F5593D", color: "white", border: 'none' }}>Edit Profile</button>
                     <button className="btn mx-4" style={{ backgroundColor: "#F5593D", color: "white", border: 'none' }} onClick={handleShow}>Create Diet</button>
                 </div>
             );

@@ -1,4 +1,3 @@
-// Import necessary modules and components
 import React from "react";
 import { Route, Routes, Navigate, useParams } from "react-router-dom";
 import { useAuth } from "./ClientPanel/utils/AuthContext"; // Adjust import path
@@ -30,12 +29,13 @@ import ProfilePage from "./ClientPanel/pages/ProfilePage"; // Adjust import path
 
 const ProfileIdWrapper = () => {
   let { userId } = useParams();
+  console.log(userId);
   return <ProfilePage userId={userId} />;
 }
 
 const AppContent = () => {
-  const { isLoggedIn, isAdmin } = useAuth();
-
+  const { isLoggedIn, isAdmin } = useAuth() || {}; // Use default empty object if useAuth returns undefined
+  console.log(isLoggedIn)
   return (
     <div className="App">
       {isAdmin ? (
@@ -67,10 +67,6 @@ const AppContent = () => {
   );
 };
 
-const App = () => (
-    
-      <AppContent />
-   
-);
+const App = () => <AppContent />;
 
 export default App;

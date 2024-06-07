@@ -27,7 +27,7 @@ const ProfileDescBody = ({ userType }) => {
                 <button
                     className="btn btn-sm btn-primary"
                     onClick={() => {
-                        setSelectedUserId(params.row.id);
+                        setSelectedUserId(params.row.requested_by);
                         setShowAssignModal(true);
                     }}
                 >

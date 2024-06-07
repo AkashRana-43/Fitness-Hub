@@ -15,14 +15,9 @@ export const AuthProvider = ({ children }) => {
     const userType = localStorage.getItem('user_type');
     const expiry = sessionStorage.getItem('expiry');
 
-    if (session && expiry && Date.now() < parseInt(expiry, 10)) {
-      setIsLoggedIn(true);
-      setExpiry(parseInt(expiry, 10));
-    }
-
     if (userType) {
       setUserType(userType);
-      setIsAdmin(true);
+      setIsAdmin(userType === 'admin');
     }
   }, []);
 
@@ -66,5 +61,4 @@ export const AuthProvider = ({ children }) => {
 };
 
 export const useAuth = () => useContext(AuthContext);
-
 

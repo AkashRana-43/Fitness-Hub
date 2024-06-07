@@ -99,7 +99,54 @@ const ProfileId = ({ userId }) => {
     const renderProfile = () => {
         if (loggedInUserType === 'normal' || loggedInUserType === 'trainer') {
             if (userType === 'trainer') {
-                return null;
+                return (
+                    <div className="row">
+                        <div className="col">
+                            <div className="card mb-4">
+                                <div className="card-body">
+                                    <h6 className="my-3">My Details</h6>
+                                    <div className="row mb-2">
+                                        <div className="col-md-3 text-muted">Height:</div>
+                                        <div className="col-md-9">
+                                            {user.current_height || "-------"} cm
+                                        </div>
+                                    </div>
+                                    <div className="row mb-2">
+                                        <div className="col-md-3 text-muted">Weight:</div>
+                                        <div className="col-md-9">
+                                            {user.current_weight || "-------"} kg
+                                        </div>
+                                    </div>
+                                    <div className="row mb-2">
+                                        <div className="col-md-3 text-muted">Sex:</div>
+                                        <div className="col-md-9">
+                                            {user.sex || "-------"}
+                                        </div>
+                                    </div>
+                                    <div className="row mb-2">
+                                        <div className="col-md-3 text-muted">Body Type:</div>
+                                        <div className="col-md-9">
+                                            {user.body_type || "-------"}
+                                        </div>
+                                    </div>
+                                    <h6 className="my-3">Contacts</h6>
+                                    <div className="row mb-2">
+                                        <div className="col-md-3 text-muted">Phone:</div>
+                                        <div className="col-md-9">
+                                            {user.contact || "-------"}
+                                        </div>
+                                    </div>
+                                    <div className="row mb-2">
+                                        <div className="col-md-3 text-muted">Address:</div>
+                                        <div className="col-md-9">
+                                            {user.address || "-------"}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                )
             } else if (userType === 'normal') {
                 return (
                     <div className="row">
